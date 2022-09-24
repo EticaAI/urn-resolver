@@ -1,12 +1,18 @@
-[
-  {
-    "in": {
-      "urn_regex": "urn:lex:br:(.*)"
-    },
-    "out": [
-      {
-        "iri_regex": "https://www.lexml.gov.br/urn/$1"
-      }
-    ]
-  }
-]
+{
+  "data": null,
+  "rules": [
+    {
+      "in": {
+        "urn": "urn:lex:br:(.*)"
+      },
+      "lb": true,
+      "out": [
+        {
+          "iri": "https://www.lexml.gov.br/urn/{{ in[0] }}",
+          "lb_w": 100,
+          "http_status": 302
+        }
+      ]
+    }
+  ]
+}

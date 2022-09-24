@@ -18,7 +18,14 @@
   $router = new URNResolver\Router();
   $result->_debug['_router'] =  $router->meta();
 
+//   header("Content-type: application/json; charset=utf-8");
+//   echo json_encode($result, JSON_PRETTY_PRINT);
+//   die();
 
+  if ($router->is_success()){
+    $router->execute();
+  } else {
+    header("Content-type: application/json; charset=utf-8");
+    echo json_encode($result, JSON_PRETTY_PRINT);
+  }
 
-  header("Content-type: application/json; charset=utf-8");
-  echo json_encode($result, JSON_PRETTY_PRINT);
