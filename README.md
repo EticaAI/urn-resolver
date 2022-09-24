@@ -7,3 +7,6 @@
 
 ssh://urn.etica.ai/home/urneticaai/urn.etica.ai/
 -->
+
+## Test cases
+- https://urn.etica.ai/urn:lex:br:federal:lei:2008-06-19;11705

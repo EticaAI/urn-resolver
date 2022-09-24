@@ -35,3 +35,8 @@ set -e
 
 # rsync --times --itemize-changes --recursive --dry-run --chmod=ugo+rwx --exclude '.git' --delete  /workspace/git/EticaAI/urn-resolver urneticaai@urn.etica.ai:/home/urneticaai/urn.etica.ai
 rsync --times --itemize-changes --recursive --chmod=ugo+rwx --exclude '.git' --delete  /workspace/git/EticaAI/urn-resolver/ urneticaai@urn.etica.ai:/home/urneticaai/urn.etica.ai
+
+
+# sftp://urn.etica.ai/home/urneticaai/logs/urn.etica.ai/http/error.log
+
+# tail -f /home/urneticaai/logs/urn.etica.ai/http/error.log

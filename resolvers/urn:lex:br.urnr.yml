@@ -1,0 +1,8 @@
+# @see https://pt.wikipedia.org/wiki/Lex_(URN)
+# @see https://projeto.lexml.gov.br/documentacao/destaques-lexml#nomes-persistentes
+# full example: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
+
+urn_base: "urn:lex:br:"
+urn_resolvers:
+  # - iri_redirect: "https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705"
+  - iri_redirect: "https://www.lexml.gov.br/urn/$urn"
