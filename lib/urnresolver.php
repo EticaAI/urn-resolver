@@ -31,11 +31,16 @@ class Router
 {
     private $resolvers = array();
     private $active_uri;
-    private $active_rule = FALSE;
+    private $active_urn = false;
+    private $active_rule_prefix = false;
+    private $active_rule_conf = false;
 
     public function __construct()
     {
         $this->active_uri = ltrim($_SERVER['REQUEST_URI'], '/');
+        if (str_starts_with($this->active_uri, 'urn:')) {
+            $this->active_urn = $this->active_uri;
+        }
         // $this->resolvers = [];
         $this->_init_rules();
     }
@@ -46,25 +51,19 @@ class Router
         foreach (glob(RESOLVER_RULE_PATH . "/*.urnr.yml") as $filepath) {
             $filename = str_replace(RESOLVER_RULE_PATH, '', $filepath);
             $filename = ltrim($filename, '/');
-            $urn_prefix = str_replace('.urnr.yml', '', $filename);
-            $this->resolvers[$urn_prefix . ':'] = $filepath;
+            $urn_prefix = str_replace('.urnr.yml', '', $filename) . ':';
+            $this->resolvers[$urn_prefix] = $filepath;
             array_push($prefixes, $urn_prefix);
         }
 
-        // @TODO test later if we always prefer longer prefixes
         usort($prefixes, function ($a, $b) {
             return strlen($b) <=> strlen($a);
         });
-        // print_r($prefixes);
-        // print_r('');
-        // print_r($this->active_uri);
-        // print_r('$this->active_uri');
+
         foreach ($prefixes as $key => $value) {
-            // print_r($this->active_uri);
-            // print_r($value);
-            // var_dump(str_starts_with($this->active_uri, $value), $this->active_uri, $value, $_SERVER['REQUEST_URI']);
             if (str_starts_with($this->active_uri, $value)) {
-                $this->active_rule = $value;
+                $this->active_rule_prefix = $value;
+                // $this->active_rule_conf = \yaml_parse_file($this->resolvers[$urn_prefix]);
                 break;
             }
         }
@@ -86,10 +85,12 @@ class Router
 
     public function meta()
     {
-        $rule = ltrim($_SERVER['REQUEST_URI'], '/');
+        // $rule = ltrim($_SERVER['REQUEST_URI'], '/');
         $meta = [
             'REQUEST_URI' => $_SERVER['REQUEST_URI'],
-            'rule_now' => $rule,
+            'active_rule_prefix' => $this->active_rule_prefix,
+            'active_rule_conf' => $this->active_rule_conf,
+            'active_urn' => $this->active_urn,
             'rules' => $this->_init_rules(),
             '_all' => var_export($this, true),
         ];

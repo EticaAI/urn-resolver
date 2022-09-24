@@ -1,0 +1,5 @@
+# .well-known/urn/urn.txt
+
+default:*=default.urnr.json
+urn:lex:br:*=urn:lex:br.urnr.json
+urn:resolver:*=urn:resolver.urnr.json

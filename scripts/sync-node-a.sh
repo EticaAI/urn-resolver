@@ -33,6 +33,9 @@ set -e
 #   /workspace/git/EticaAI/urn-resolver \
 #   urneticaai@urn.etica.ai:/home/urneticaai/urn.etica.ai
 
+# @TODO make rsync only deal with /.well-known/urn/ and not /.well-known/
+#       see https://unix.stackexchange.com/questions/34787/rsync-with-absolute-paths-and-excluding-subpaths
+
 # rsync --times --itemize-changes --recursive --dry-run --chmod=ugo+rwx --exclude '.git' --delete  /workspace/git/EticaAI/urn-resolver urneticaai@urn.etica.ai:/home/urneticaai/urn.etica.ai
 rsync --times --itemize-changes --recursive --chmod=ugo+rwx --exclude '.git' --delete  /workspace/git/EticaAI/urn-resolver/ urneticaai@urn.etica.ai:/home/urneticaai/urn.etica.ai
 
