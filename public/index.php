@@ -14,7 +14,7 @@
     ],
   ];
 
-  $result->_debug['_kv'] = URNResolver\debug();
+//   $result->_debug['_kv'] = URNResolver\debug();
   $router = new URNResolver\Router();
   $result->_debug['_router'] =  $router->meta();
 

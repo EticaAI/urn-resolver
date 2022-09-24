@@ -29,28 +29,60 @@ function debug()
 
 class Router
 {
-    public const XX = "foo";
-
     private $resolvers = array();
+    private $active_uri;
+    private $active_rule = FALSE;
 
     public function __construct()
     {
-        // $this->value = $value;
+        $this->active_uri = ltrim($_SERVER['REQUEST_URI'], '/');
+        // $this->resolvers = [];
+        $this->_init_rules();
     }
 
-    private function _rules()
+    private function _init_rules()
     {
-        // $result = [];
+        $prefixes = [];
         foreach (glob(RESOLVER_RULE_PATH . "/*.urnr.yml") as $filepath) {
             $filename = str_replace(RESOLVER_RULE_PATH, '', $filepath);
             $filename = ltrim($filename, '/');
             $urn_prefix = str_replace('.urnr.yml', '', $filename);
-            // array_push($result, [$filepath, $urn_prefix]);
-            $this->$resolvers[$urn_prefix] = $filepath;
+            $this->resolvers[$urn_prefix . ':'] = $filepath;
+            array_push($prefixes, $urn_prefix);
         }
-        // array_push($result, ['RESOLVER_RULE_PATH', RESOLVER_RULE_PATH]);
-        return $this->$resolvers;
+
+        // @TODO test later if we always prefer longer prefixes
+        usort($prefixes, function ($a, $b) {
+            return strlen($b) <=> strlen($a);
+        });
+        // print_r($prefixes);
+        // print_r('');
+        // print_r($this->active_uri);
+        // print_r('$this->active_uri');
+        foreach ($prefixes as $key => $value) {
+            // print_r($this->active_uri);
+            // print_r($value);
+            // var_dump(str_starts_with($this->active_uri, $value), $this->active_uri, $value, $_SERVER['REQUEST_URI']);
+            if (str_starts_with($this->active_uri, $value)) {
+                $this->active_rule = $value;
+                break;
+            }
+        }
+
+        return $this->resolvers;
     }
+
+    // private function _active_rule()
+    // {
+    //     $rule = ltrim($_SERVER['REQUEST_URI'], '/');
+    //     foreach (glob(RESOLVER_RULE_PATH . "/*.urnr.yml") as $filepath) {
+    //         $filename = str_replace(RESOLVER_RULE_PATH, '', $filepath);
+    //         $filename = ltrim($filename, '/');
+    //         $urn_prefix = str_replace('.urnr.yml', '', $filename);
+    //         $this->$resolvers[$urn_prefix] = $filepath;
+    //     }
+    //     return $this->$resolvers;
+    // }
 
     public function meta()
     {
@@ -58,7 +90,8 @@ class Router
         $meta = [
             'REQUEST_URI' => $_SERVER['REQUEST_URI'],
             'rule_now' => $rule,
-            'rules' => $this->_rules(),
+            'rules' => $this->_init_rules(),
+            '_all' => var_export($this, true),
         ];
 
         return $meta;

@@ -37,6 +37,10 @@ set -e
 rsync --times --itemize-changes --recursive --chmod=ugo+rwx --exclude '.git' --delete  /workspace/git/EticaAI/urn-resolver/ urneticaai@urn.etica.ai:/home/urneticaai/urn.etica.ai
 
 
+# while inotifywait -e close_write myfile.py; do ./myfile.py; done
+# https://superuser.com/questions/181517/how-to-execute-a-command-whenever-a-file-changes
+#     while inotifywait -e close_write lib/urnresolver.php; do ./scripts/sync-node-a.sh; sleep 5; done
+
 # sftp://urn.etica.ai/home/urneticaai/logs/urn.etica.ai/http/error.log
 
 # tail -f /home/urneticaai/logs/urn.etica.ai/http/error.log
