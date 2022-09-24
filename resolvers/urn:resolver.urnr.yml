@@ -1,0 +1,3 @@
+# URN for explain itself
+urn_base: "urn:resolver:"
+urn_resolver_internal: true
