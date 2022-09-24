@@ -1,0 +1,30 @@
+# - regex101 (test cases) PCRE2: 
+#   - https://regex101.com/r/jepenH/1
+#
+# urn:ietf:rfc:2141
+# urn:ietf:std:50
+# urn:ietf:id:ietf-urn-ietf-06
+# urn:ietf:mtg:41-urn
+# urn:ietf:bcp:47
+
+_meta:
+  _note: this resolver rule is an early working draft
+  spec: https://datatracker.ietf.org/doc/html/rfc2648
+  examples:
+    - in.urn: urn:ietf:rfc:2141
+      out.iri: https://www.rfc-editor.org/info/rfc2141
+    - in.urn: urn:ietf:rfc:2141
+      out.iri: https://www.rfc-editor.org/rfc/rfc2141.html
+# data:
+#   # No contextual data need here
+rules:
+  - in:
+      urn: "urn:ietf:rfc:(.*)"
+    out:
+      - iri: "https://www.rfc-editor.org/info/rfc{{ in[1] }}"
+        http_status: 302
+  - in:
+      urn: "urn:ietf:(.*)"
+    out:
+      - iri: "https://www.rfc-editor.org/info/{{ in[1] }}"
+        http_status: 302

@@ -112,27 +112,7 @@ class Router
 
         $iri_final = strtr($out_iri, $all_options);
         $this->active_urn_to_uri = $iri_final ;
-        // array_push($this->_logs, $out_http_status);
-        // array_push($this->_logs, $iri_final);
-        // array_push($this->_logs, $all_options);
-        // array_push($this->_logs, $in_urn_rule);
-        // array_push($this->_logs, $urn_pattern);
-        // array_push($this->_logs, $matches);
-        // $new = preg_replace($in_urn_rule, $in_urn, $active_uri);
-        // $this->active_rule_conf = [$active_rule, $in_urn, $urn_pattern];
     }
-
-    // private function _active_rule()
-    // {
-    //     $rule = ltrim($_SERVER['REQUEST_URI'], '/');
-    //     foreach (glob(RESOLVER_RULE_PATH . "/*.urnr.yml") as $filepath) {
-    //         $filename = str_replace(RESOLVER_RULE_PATH, '', $filepath);
-    //         $filename = ltrim($filename, '/');
-    //         $urn_prefix = str_replace('.urnr.yml', '', $filename);
-    //         $this->$resolvers[$urn_prefix] = $filepath;
-    //     }
-    //     return $this->$resolvers;
-    // }
 
     public function meta()
     {

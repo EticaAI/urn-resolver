@@ -1,0 +1,40 @@
+{
+  "_meta": {
+    "_note": "this resolver rule is an early working draft",
+    "spec": "https://datatracker.ietf.org/doc/html/rfc2648",
+    "examples": [
+      {
+        "in.urn": "urn:ietf:rfc:2141",
+        "out.iri": "https://www.rfc-editor.org/info/rfc2141"
+      },
+      {
+        "in.urn": "urn:ietf:rfc:2141",
+        "out.iri": "https://www.rfc-editor.org/rfc/rfc2141.html"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "in": {
+        "urn": "urn:ietf:rfc:(.*)"
+      },
+      "out": [
+        {
+          "iri": "https://www.rfc-editor.org/info/rfc{{ in[1] }}",
+          "http_status": 302
+        }
+      ]
+    },
+    {
+      "in": {
+        "urn": "urn:ietf:(.*)"
+      },
+      "out": [
+        {
+          "iri": "https://www.rfc-editor.org/info/{{ in[1] }}",
+          "http_status": 302
+        }
+      ]
+    }
+  ]
+}
