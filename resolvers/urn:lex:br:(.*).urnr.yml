@@ -1,0 +1,11 @@
+# @see https://pt.wikipedia.org/wiki/Lex_(URN)
+# @see https://projeto.lexml.gov.br/documentacao/destaques-lexml#nomes-persistentes
+# full example: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
+
+# https://regex101.com/?regex=urn:lex:br:(.*)
+- in:
+    urn_regex: "urn:lex:br:(.*)"
+  # loadbalance:
+  out:
+    - iri_regex: "https://www.lexml.gov.br/urn/$1"
+    # - iri_redirect: "https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705"

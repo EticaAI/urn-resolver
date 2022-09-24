@@ -54,10 +54,11 @@ rebuild_well_known_urn() {
   for entry in "$WELL_KNOWN_SOURCE"/*.urnr.yml; do
     source_name="${entry##*/}"
     public_name="${source_name%.yml}.json"
-    urn_prefix="${source_name%.urnr.yml}:*"
+    # urn_prefix="${source_name%.urnr.yml}"
     echo "$source_name $public_name $entry"
     yq <"$entry" >"$WELL_KNOWN_PUBLIC/$public_name"
-    echo "$urn_prefix=$public_name" >>"$WELL_KNOWN_PUBLIC/urn.txt"
+    # echo "$urn_prefix=$public_name" >>"$WELL_KNOWN_PUBLIC/urn.txt"
+    echo "$public_name" >>"$WELL_KNOWN_PUBLIC/urn.txt"
   done
 }
 

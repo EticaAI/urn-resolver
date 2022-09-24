@@ -1,8 +1,0 @@
-{
-  "urn_base": "urn:lex:br:",
-  "urn_resolvers": [
-    {
-      "iri_redirect": "https://www.lexml.gov.br/urn/$urn"
-    }
-  ]
-}

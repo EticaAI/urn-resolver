@@ -1,0 +1,5 @@
+# URN for explain itself
+
+# https://regex101.com/?regex=urn:resolver:(.*)
+urn_base: "urn:resolver:(.*)"
+urn_resolver_internal: true
