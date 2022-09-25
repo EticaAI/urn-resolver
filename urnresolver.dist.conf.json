@@ -1,0 +1,4 @@
+{
+  "//comment": "Rename urnresolver.dist.conf.json to urnresolver.conf.json",
+  "base": "http://localhost:8000"
+}

@@ -2,6 +2,7 @@
 
 
   require '../lib/urnresolver.php';
+  $router = new URNResolver\Router();
 
   $result = (object) [
     'message' => '@TODO',
@@ -15,7 +16,6 @@
   ];
 
   $result->_debug['_kv'] = URNResolver\debug();
-  $router = new URNResolver\Router();
   $result->_debug['_router'] =  $router->meta();
 
 //   header("Content-type: application/json; charset=utf-8");
@@ -26,6 +26,7 @@
   if ($router->is_success()){
     $router->execute();
   } else {
+    $router->execute_welcome();
     header("Content-type: application/json; charset=utf-8");
     // @see https://web.dev/stale-while-revalidate/
     // header('Cache-Control: public, max-age=3600, s-maxage=120, stale-while-revalidate=600, stale-if-error=3600');

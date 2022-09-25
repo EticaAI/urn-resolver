@@ -41,7 +41,7 @@ class Router
     public function __construct()
     {
         $this->active_uri = ltrim($_SERVER['REQUEST_URI'], '/');
-        if (str_starts_with($this->active_uri, 'urn:')) {
+        if (strpos($this->active_uri, 'urn:') == 0) {
             $this->active_urn = $this->active_uri;
         }
         // $this->resolvers = [];
@@ -149,6 +149,28 @@ class Router
         header('Location: ' . $this->active_urn_to_uri);
         die();
         // header("HTTP/1.1 301 Moved Permanently");
+    }
+
+    public function execute_welcome()
+    {
+        header("Content-type: application/json; charset=utf-8");
+        header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
+
+        $result = (object) [
+            'message' => '@TODO',
+            'status' => 200,
+            '_debug' => [
+                '_REQUEST' => $_REQUEST,
+                'REQUEST_URI' => $_SERVER['REQUEST_URI'],
+                '_kv' => [],
+                '_router' => []
+            ],
+          ];
+
+        http_response_code(200);
+        $result->_debug['_router'] =  $this->meta();
+        echo json_encode($result, JSON_PRETTY_PRINT);
+        die();
     }
 
     public function is_success()
