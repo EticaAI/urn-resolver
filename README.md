@@ -1,8 +1,12 @@
 # URN Resolver open source server and `/.well-known/urn/` conventions
-**This repository contains open source software to host your own a multi-propose [URN](https://en.wikipedia.org/wiki/Uniform_Resource_Name) Resolver and a working-draft open specification for `/.well-known/urn/`**. Feedback is welcomed!
+**This repository contains open source software to host your own a multi-propose [URN](https://en.wikipedia.org/wiki/Uniform_Resource_Name) Resolver and a working-draft open specification for `/.well-known/urn/`. Feedback in something so _overly specific_ is still welcomed!**
 
-The idea of some resolver is not new ([EticaAI/HXL-Data-Science-file-formats#13](https://github.com/EticaAI/HXL-Data-Science-file-formats/issues/13)).
-But the current implementation of opting for server-based comes from w3id (<https://github.com/perma-id/w3id.org>), which focuses on PURLs (not URNs). But PHP is used to allow more flexibility on configuration files over direct .htaccess rules.
+![URN Resolver banner](img/urn-banner.png)
+
+<!-- The idea of some resolver is not new ([EticaAI/HXL-Data-Science-file-formats#13](https://github.com/EticaAI/HXL-Data-Science-file-formats/issues/13)). -->
+
+While it is possible to host content on cheap, static hosting (such as GitHub pages), resolvers require dynamic processing (and decent uptime).
+The current implementation of opting for server-based comes from w3id (<https://github.com/perma-id/w3id.org>), which focuses on PURLs (not URNs), but PHP is used to allow more flexibility on configuration files over direct .htaccess rules.
 
 ----
 
@@ -13,14 +17,12 @@ But the current implementation of opting for server-based comes from w3id (<http
 
 - [The URN Resolver server](#the-urn-resolver-server)
     - [How to run local node](#how-to-run-local-node)
-    - [How to run a production servers](#how-to-run-a-production-servers)
-        - [Your first high-availability cluster deployment](#your-first-high-availability-cluster-deployment)
+    - [How to run production servers](#how-to-run-production-servers)
         - [Your first production single node recommended](#your-first-production-single-node-recommended)
+        - [Your first high-availability cluster deployment](#your-first-high-availability-cluster-deployment)
 - [The URN Resolver conventions/specifications](#the-urn-resolver-conventionsspecifications)
     - [/.well-known/urn/ convention](#well-knownurn-convention)
     - [urn.example.org: subdomain convention](#urnexampleorg-subdomain-convention)
-    - [Peer-to-peer URN Resolver Server conventions](#peer-to-peer-urn-resolver-server-conventions)
-        - [URN Resolver Rules sharing](#urn-resolver-rules-sharing)
 - [Test cases](#test-cases)
     - [URN:DOI](#urndoi)
     - [URN:GEO](#urngeo)
@@ -35,9 +37,15 @@ But the current implementation of opting for server-based comes from w3id (<http
 
 ## The URN Resolver server
 
+**Trivia**: An production server is available at <https://urn.etica.ai>.
+It's behind CloudFlare free plan
+(can have "cache everything enabled"; can survive massive number of requests)
+and is currently hosted on Dreamhost (shared hosting; single node).
+The handcrafted rules at [resolvers](resolvers/) are converted to JSON and rsync'ed to the server.
+
 ### How to run local node
 
-Be sure to have something such as php 8.1. But PHP 7.4 also know to work
+The current implementation uses PHP. Tested with 7.4 and 8.1.
 
 ```bash
 # Get a copy
@@ -50,7 +58,13 @@ php -S localhost:8000
 # Visit home page: http://localhost:8000/
 ```
 
-### How to run a production server(s)
+### How to run production server(s)
+
+#### Your first production single node (recommended)
+
+Use the same strategy for the high-availability cluster below, but with a single node.
+
+This strategy is simpler to keep online in particular if the number of requests is not able to be worth the trouble to keep load balancers.
 
 #### Your first high-availability cluster deployment
 
@@ -78,12 +92,6 @@ DRY_RUN="1" RSYNC_REMOTE="user@server-c.urn.example.org/home/user/public_html" .
 > While most reverse proxies (such as Cloudflare even without paid load balance plans) will try next node if the entire source server is offline (e.g. rebooting) at least user browsers such as Chrome will also automatically check the next IP if they receive an 5xx server error (even if the server is online, but your app is failing).
 This _poor's man load balancing_ works, but is a last resort.
 It cannot cope if 1/3 (1 out of 3 nodes) or 1/2 (50% of your nodes) are online and (worst) reply 200 OK, but content is "welcome to nginx" / "welcome to apache".
-
-#### Your first production single node (recommended)
-
-Use the same strategy for the high-availability cluster, but with a single node.
-
-This strategy is simpler to keep online in particular if the number of requests is not able to be worth the trouble to keep load balancers.
 
 ## The URN Resolver conventions/specifications
 
@@ -171,10 +179,8 @@ See Peer-to-peer section.
 ssh://urn.etica.ai/home/urneticaai/urn.etica.ai/
 -->
 
-### Peer-to-peer URN Resolver Server conventions
-<!--
-One implication of how _/.well-known/urn/ conventions_ are designed to enable client-side URN conversions is it also allows server-to-server cooperation.
--->
+<!-- 
+  ### Peer-to-peer URN Resolver Server conventions
 
 An URN Resolver Server able to understand rules of its own `/.well-known/urn/` will also understand if rules are copied from another server to its own public folder.
 
@@ -189,7 +195,8 @@ Use case:
 
 - `urn.op-geo.example.org` and `urn.op-generic.example.org` can resolve near same URNs
 - User wants resolve the URN `urn:example:adm:ago?f=gpkg` and asks `urn.op-generic.example.org`
-- (...)
+- (...) 
+-->
 
 <!-- 
   ## (...)
