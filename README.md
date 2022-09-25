@@ -1,8 +1,8 @@
 # URN Resolver open source server and `/.well-known/urn/` conventions
-Open souce configurable software optimized to host your own [URN](https://en.wikipedia.org/wiki/Uniform_Resource_Name) conversor to resolvable URLs.
+**This repository contains open source software to host your own a multi-propose [URN](https://en.wikipedia.org/wiki/Uniform_Resource_Name) Resolver and a working-draft open specification for `/.well-known/urn/`**. Feedback is welcomed!
 
-
-> @see https://github.com/EticaAI/HXL-Data-Science-file-formats/issues/13
+The idea of some resolver is not new ([EticaAI/HXL-Data-Science-file-formats#13](https://github.com/EticaAI/HXL-Data-Science-file-formats/issues/13)).
+But the current implementation of opting for server-based comes from w3id (<https://github.com/perma-id/w3id.org>), which focuses on PURLs (not URNs). But PHP is used to allow more flexibility on configuration files over direct .htaccess rules.
 
 ----
 
@@ -19,7 +19,6 @@ Open souce configurable software optimized to host your own [URN](https://en.wik
 - [The URN Resolver conventions/specifications](#the-urn-resolver-conventionsspecifications)
     - [/.well-known/urn/ convention](#well-knownurn-convention)
     - [urn.example.org: subdomain convention](#urnexampleorg-subdomain-convention)
-        - [Existing examples](#existing-examples)
     - [Peer-to-peer URN Resolver Server conventions](#peer-to-peer-urn-resolver-server-conventions)
         - [URN Resolver Rules sharing](#urn-resolver-rules-sharing)
 - [Test cases](#test-cases)
@@ -28,7 +27,6 @@ Open souce configurable software optimized to host your own [URN](https://en.wik
     - [URN:IETF](#urnietf)
     - [URN:ISSN](#urnissn)
     - [URN:LEX:BR](#urnlexbr)
-    - [/.well-known/urn/](#well-knownurn)
 - [License](#license)
 
 <!-- /TOC -->
@@ -98,7 +96,7 @@ This strategy is simpler to keep online in particular if the number of requests 
 
 > **Warning**: the entire `/.well-known/urn/` is a draft.
 > The intent is to describe the strategy used on the software implementation in a way that is not vendor dependent.
-> Feel free to check the actual content of the folder [public/.well-known/urn](public/.well-known/urn).
+> **Feel free to check the actual content of the folder [public/.well-known/urn](public/.well-known/urn)**. The YAML files on [resolvers/](resolvers/) are not part of this convention (are _implementation detail_).
 
 The files published on `/.well-known/urn/` are inspired by the [RFC 8615 - Well-Known Uniform Resource Identifiers (URIs)](https://www.rfc-editor.org/rfc/rfc8615).
 Do exist a list of [IANA Well-Known URIs](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml),
@@ -119,9 +117,19 @@ to explain the files is:
     - `urn:doi:(.*).urnr.yml` (example of alternative encoding in YAML)
     - `urn:doi:(.*).urnr.txt` (example of text file)
 - `/.well-known/urn/<FILENAME_RULE_GROUP>.urnr.<FILE_CONTAINER_FORMAT>` (example: <http://urn.example.org/.well-known/urn/urn:doi:(.*).urnr.json>)
-  - (...TODO explain more...)
+  - Note: as 2022-09-25, the content of the file rules still need more real world testing.
 
 ### `urn.example.org`: subdomain convention
+
+> **Note**:
+> - Know real world examples (not related to this convention) know to follow this logic of using `urn.` subdomain and no subfolder:
+>   - <https://urn.fi/>
+>   - <https://urn.issn.org/>
+> - Counter examples (e.g, able to resolve own URNs on main domain):
+>   - <https://www.doi.org/>
+> - [PURL](https://en.wikipedia.org/wiki/Persistent_uniform_resource_locator) also serve as inspiration of use of sudomains.
+>   The `purl.` is used in `purl.oclc.org`, `purl.archive.org` and `purl.obolibrary.org`.
+
 
 It's **RECOMMENDED** for new implementations to define a URN resolver with its own dedicated subdomain `urn.` both for signal intent and for performance reasons
 (e.g. in case necessary move the resolver to different server infrastructure than content on some main site).
@@ -157,18 +165,6 @@ This means URN Resolvers, as long as public adversised entrypoint is conformant,
 **MAY** make additional rewrites before redirect to external servers.
 One common reason for this behavior are URNs which are more complex to process than shareable URN Resolver Rules to other public resolvers.
 See Peer-to-peer section.
-
-#### Existing examples
-
-Know real world examples (not related to this convention) know to follow this logic of using `urn.` subdomain and no subfolder:
-
-- <https://urn.fi/>
-- <https://urn.issn.org/>
-
-Counter examples (e.g, able to resolve own URNs on main domain):
-
-- <https://www.doi.org/>
-
 
 <!--
 
@@ -224,8 +220,6 @@ Check [resolvers](resolvers/) folder.
 - https://urn.etica.ai/urn:lex:br:federal:lei:2008-06-19;11705
 - https://urn.etica.ai/urn:resolver:about:urn:lex:br:federal:lei:2008-06-19;11705
 
-### /.well-known/urn/
-> @see https://en.wikipedia.org/wiki/Well-known_URI
 
 <!--
 ## @TODO
