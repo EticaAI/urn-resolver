@@ -1,4 +1,4 @@
-# URN Resolver
+# URN Resolver open source server and `/.well-known/urn/` conventions
 Open souce configurable software optimized to host your own [URN](https://en.wikipedia.org/wiki/Uniform_Resource_Name) conversor to resolvable URLs.
 
 
@@ -9,33 +9,32 @@ Open souce configurable software optimized to host your own [URN](https://en.wik
 **Table of contents**
 
 
-<!-- TOC -->
+<!-- TOC depthfrom:2 -->
 
-- [URN Resolver](#urn-resolver)
-    - [Quickstart: how to run yor urn node](#quickstart-how-to-run-yor-urn-node)
-        - [How to run local node](#how-to-run-local-node)
-        - [How to run a production servers](#how-to-run-a-production-servers)
-            - [Your first high-availability cluster deployment](#your-first-high-availability-cluster-deployment)
-            - [Your first production single node recommended](#your-first-production-single-node-recommended)
-- [The URN Resolver specification open for feedback](#the-urn-resolver-specification-open-for-feedback)
+- [The URN Resolver server](#the-urn-resolver-server)
+    - [How to run local node](#how-to-run-local-node)
+    - [How to run a production servers](#how-to-run-a-production-servers)
+        - [Your first high-availability cluster deployment](#your-first-high-availability-cluster-deployment)
+        - [Your first production single node recommended](#your-first-production-single-node-recommended)
+- [The URN Resolver conventions/specifications](#the-urn-resolver-conventionsspecifications)
+    - [urn.example.org](#urnexampleorg)
+        - [Existing examples](#existing-examples)
     - [/.well-known/urn/](#well-knownurn)
-    - [...](#)
-    - [Test cases](#test-cases)
-        - [URN:DOI](#urndoi)
-        - [URN:GEO](#urngeo)
-        - [URN:IETF](#urnietf)
-        - [URN:ISSN](#urnissn)
-        - [URN:LEX:BR](#urnlexbr)
-        - [/.well-known/urn/](#well-knownurn)
-    - [License](#license)
+- [...](#)
+- [Test cases](#test-cases)
+    - [URN:DOI](#urndoi)
+    - [URN:GEO](#urngeo)
+    - [URN:IETF](#urnietf)
+    - [URN:ISSN](#urnissn)
+    - [URN:LEX:BR](#urnlexbr)
+    - [/.well-known/urn/](#well-knownurn)
+- [License](#license)
 
 <!-- /TOC -->
 
 ----
 
-
-
-## Quickstart: how to run yor urn node
+## The URN Resolver server
 
 ### How to run local node
 
@@ -87,11 +86,61 @@ Use the same strategy for the high-availability cluster, but with a single node.
 
 This strategy is simpler to keep online in particular if the number of requests is not able to be worth the trouble to keep load balancers.
 
-# The URN Resolver specification (open for feedback)
+## The URN Resolver conventions/specifications
 
-(...)
+> The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+> NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+> "OPTIONAL" in this document are to be interpreted as described in
+> [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
 
-## /.well-known/urn/
+### `urn.example.org`
+
+It's **RECOMMENDED** for new implementations to define a URN resolver with its own dedicated subdomain `urn.` both for signal intent and for performance reasons
+(e.g. in case necessary move the resolver to different server infrastructure than content on some main site).
+
+Example:
+
+- `https://www.example.com` (or `https://example.com`):
+  - `https://urn.example.com`
+- `https://my-university.example.org`:
+  - `https://urn.my-university.example.org`
+- `https://my-department.my-university.example.org`:
+  - `https://urn.my-department.my-university.example.org`
+
+The URN Resolvers **MUST** be resolvable at top level of the choosen domain.
+This means it is forbidden to use subfolders (even for testing environments) as entrypoint to avoid confusion with users about what is the URN content and what is the resolver.
+The URN resolvers also **MUST NOT** require query string or fragment string
+
+Example:
+
+- User want know how to resolve this URN: `urn:example:123`
+  - Conformant: `https://urn.my-university.example.org/urn:example:123`
+  - NOT conformant (subfolder):
+    - `https://urn.my-university.example.org/folder/urn:example:123`
+  - NOT Conformant (query string):
+    - `https://urn.my-university.example.org/?urn=urn:example:123`
+  - NOT Conformant (fragment):
+    - `https://urn.my-university.example.org/#urn:example:123`
+
+There is no restriction for redirects after the initial request.
+This means URN Resolvers **MAY** (...)
+
+#### Existing examples
+
+Know real world examples (not related to this convention) know to follow this logic of using `urn.` subdomain and no subfolder:
+
+- <https://urn.fi/>
+- <https://urn.issn.org/>
+
+Counter examples (e.g, able to resolve own URNs on main domain):
+
+- <https://www.doi.org/>
+
+
+### /.well-known/urn/
+
+> **Note**: at the moment, this convention is not submitted (even as provisional status) on the [IANA Well-Known URIs](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml) list.
+ 
 
 As per [RFC 8615 - Well-Known Uniform Resource Identifiers (URIs)](https://www.rfc-editor.org/rfc/rfc8615) we recommend expose the rules under the `/.well-known/urn/`.
 
