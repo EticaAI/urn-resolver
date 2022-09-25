@@ -1,6 +1,7 @@
 # .well-known/urn/urn.txt
 
 urn:doi:(.*).urnr.json
+urn:geo:(.*).urnr.json
 urn:ietf:(.*).urnr.json
 urn:issn:(.*).urnr.json
 urn:lex:br:(.*).urnr.json

@@ -17,12 +17,9 @@
       "in": {
         "urn": "urn:issn:(.*)"
       },
-      "out": [
-        {
-          "iri": "https://urn.issn.org/urn:issn:{{ in[1] }}",
-          "http_status": 302
-        }
-      ]
+      "out": {
+        "iri": "https://urn.issn.org/urn:issn:{{ in[1] }}"
+      }
     }
   ]
 }

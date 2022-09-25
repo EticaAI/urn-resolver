@@ -5,15 +5,8 @@ _meta:
       out.iri: https://urn.issn.org/urn:issn:1476-4687
     - in.urn: urn:ISSN:1476-4687
       out.iri: https://urn.issn.org/urn:issn:1476-4687
-#data:
-#  # No contextual data need here
 rules:
-  # https://regex101.com/?regex=urn:doi:(.*)
   - in:
       urn: "urn:issn:(.*)"
-    # lb: true
     out:
-      # - iri: "https://doi.org/{{ in[0] }}"
-      - iri: "https://urn.issn.org/urn:issn:{{ in[1] }}"
-        # lb_w: 100
-        http_status: 302
+      iri: "https://urn.issn.org/urn:issn:{{ in[1] }}"

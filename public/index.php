@@ -14,18 +14,25 @@
     ],
   ];
 
-//   $result->_debug['_kv'] = URNResolver\debug();
+  $result->_debug['_kv'] = URNResolver\debug();
   $router = new URNResolver\Router();
   $result->_debug['_router'] =  $router->meta();
 
 //   header("Content-type: application/json; charset=utf-8");
 //   echo json_encode($result, JSON_PRETTY_PRINT);
+//   http_response_code(500);
 //   die();
 
   if ($router->is_success()){
     $router->execute();
   } else {
     header("Content-type: application/json; charset=utf-8");
+    // @see https://web.dev/stale-while-revalidate/
+    // header('Cache-Control: public, max-age=3600, s-maxage=120, stale-while-revalidate=600, stale-if-error=3600');
+    // header('Cache-Control: public, max-age=3600, s-maxage=30, stale-while-revalidate=3600, stale-if-error=3600');
+    header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
+    // header('Vary: Accept-Encoding');
+    // http_response_code(500);
     echo json_encode($result, JSON_PRETTY_PRINT);
   }
 

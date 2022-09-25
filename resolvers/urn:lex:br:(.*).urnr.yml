@@ -1,16 +1,19 @@
 # @see https://pt.wikipedia.org/wiki/Lex_(URN)
 # @see https://projeto.lexml.gov.br/documentacao/destaques-lexml#nomes-persistentes
 # full example: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
-
-data:
-  # No contextual data need here
+_meta:
+  spec:
+    - https://en.wikipedia.org/wiki/LexML
+    # - https://en.wikipedia.org/wiki/EUR-Lex
+  examples:
+    - in.urn: urn:lex:br:federal:lei:2008-06-19;11705
+      out.iri: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
+# data:
+#   # No contextual data need here
 rules:
-  # https://regex101.com/?regex=urn:lex:br:(.*)
   - in:
       urn: "urn:lex:br:(.*)"
-    lb: true
     out:
       - iri: "https://www.lexml.gov.br/urn/{{ in[0] }}"
         lb_w: 100
         http_status: 302
-      # - iri_redirect: "https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705"

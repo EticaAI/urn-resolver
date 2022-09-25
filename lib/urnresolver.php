@@ -97,7 +97,14 @@ class Router
 
         // $out_iri = $this->active_rule_conf->rules[0]['iri'];
         // @TODO implement load balancing on this part: out[0]
-        $out_rule = $this->active_rule_conf->rules[0]->out[0];
+        $rule = $this->active_rule_conf->rules[0];
+
+        if (is_array($rule->out)) {
+            $out_rule = $rule->out[0];
+        } else {
+            $out_rule = $rule->out;
+        }
+
         $out_iri = $out_rule->iri;
 
         if (isset($out_rule->http_status)) {
@@ -135,13 +142,17 @@ class Router
     public function execute()
     {
         http_response_code($this->active_urn_to_httpstatus);
-        header('Location:  ' . $this->active_urn_to_uri);
+        // @see https://developers.cloudflare.com/cache/about/cache-control/
+        // This log really needs be reviewned later
+        header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
+        // header('Vary: Accept-Encoding');
+        header('Location: ' . $this->active_urn_to_uri);
         die();
         // header("HTTP/1.1 301 Moved Permanently");
     }
 
     public function is_success()
     {
-        return isset($this->active_urn_to_uri);
+        return isset($this->active_urn_to_uri) and !empty($this->active_urn_to_uri);
     }
 }

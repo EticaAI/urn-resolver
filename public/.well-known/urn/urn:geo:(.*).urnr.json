@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "spec": [
+      "https://www.rfc-editor.org/rfc/rfc5870",
+      "https://en.wikipedia.org/wiki/Geo_URI_scheme",
+      "https://github.com/openstreetmap/openstreetmap-website/issues/799"
+    ],
+    "examples": [
+      {
+        "in.urn": "urn:geo:-19.9026,-44.0340;u=100000",
+        "out.iri": "https://osm.codes/geo:-19.9026,-44.0340;u=100000"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "in": {
+        "urn": "urn:geo:(.*)"
+      },
+      "out": {
+        "iri": "https://osm.codes/geo:{{ in[1] }}"
+      }
+    }
+  ]
+}

@@ -11,6 +11,9 @@ ssh://urn.etica.ai/home/urneticaai/urn.etica.ai/
 ### URN:DOI
 - https://urn.etica.ai/urn:doi:10.1000/182
 
+### URN:GEO
+- https://urn.etica.ai/urn:geo:-19.9026,-44.0340;u=100000
+
 ### URN:IETF
 - https://urn.etica.ai/urn:ietf:rfc:2141
 - https://urn.etica.ai/urn:ietf:bcp:47
@@ -24,3 +27,9 @@ ssh://urn.etica.ai/home/urneticaai/urn.etica.ai/
 
 ### /.well-known/urn/
 > @see https://en.wikipedia.org/wiki/Well-known_URI
+
+<!--
+## @TODO
+### Load testing
+- https://gist.github.com/denji/8333630
+-->
