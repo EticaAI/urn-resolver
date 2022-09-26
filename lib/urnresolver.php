@@ -156,20 +156,30 @@ class Router
         header("Content-type: application/json; charset=utf-8");
         header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
 
+        $resolver_paths = [];
+        foreach ($this->resolvers as $key => $value) {
+            $parts = explode('/.well-known/urn/', $value);
+            array_shift($parts);
+            $path = '/.well-known/urn/' . $parts[0];
+            $resolver_paths[$key] = $path;
+        }
+
         $result = (object) [
-            'message' => '@TODO',
+            'message' => 'URN Resolver',
             'status' => 200,
-            '_debug' => [
-                '_REQUEST' => $_REQUEST,
-                'REQUEST_URI' => $_SERVER['REQUEST_URI'],
-                '_kv' => [],
-                '_router' => []
-            ],
+            // 'resolvers' => $this->resolvers,
+            'resolvers' => $resolver_paths,
+            // '_debug' => [
+            //     '_REQUEST' => $_REQUEST,
+            //     'REQUEST_URI' => $_SERVER['REQUEST_URI'],
+            //     '_kv' => [],
+            //     '_router' => []
+            // ],
           ];
 
         http_response_code(200);
-        $result->_debug['_router'] =  $this->meta();
-        echo json_encode($result, JSON_PRETTY_PRINT);
+        // $result->_debug['_router'] =  $this->meta();
+        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         die();
     }
 
