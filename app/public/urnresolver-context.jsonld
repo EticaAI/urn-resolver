@@ -1,0 +1,9 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "$id": "@id",
+    "data": "@nest",
+    "meta": "@nest",
+    "schema": "https://schema.org/"
+  }
+}

@@ -238,12 +238,15 @@ Check [resolvers](resolvers/) folder.
 - https://www.schemastore.org/json/
 - https://json-schema.org/learn/examples/geographical-location.schema.json
 - https://jsonapi.org/
+  - Online apps (needs testing)
+    - http://codeme.lt/json-api-document-viewer/
 - https://jsonapi.org/schema
 
 ### Validators
 - https://validator.schema.org/
 - https://json-ld.org/playground/
   - https://json-ld.org/spec/latest/json-ld/#nested-properties
+- https://www.jsonschemavalidator.net/
 -->
 
 ## License

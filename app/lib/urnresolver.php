@@ -216,24 +216,20 @@ class Router
             $resolver_paths[$key] = $path;
         }
 
+        // https://jsonapi.org/format/
         $result = (object) [
             // '$schema' => 'https://purl.org/eticaai/urnresolver/jsonschema',
             '$schema' => 'https://jsonapi.org/schema',
-            // '$id' => $this->active_base . $this->active_uri,
-            '@context' => (object)  [
-                '@version' => 1.1,
-                'data' => '@nest',
-                'meta' => '@nest',
-                "schema" => "https://schema.org/"
-            ],
-            'meta' => (object) [
-                "schema:Message" => (object)  [
-                    'schema:comment' => 'URN Resolver',
-                    'status_http_code' => 200,
-                    'status_pages' => ['https://stats.uptimerobot.com/z6Y43IGQkL'],
-                    'datetime' => date("c"),
-                ]
-            ],
+            '$id' => $this->active_base . $this->active_uri,
+            // 'id' => $this->active_base . $this->active_uri,
+            // '@context' => (object)  [
+            //     '@version' => 1.1,
+            //     '$id' => '@id',
+            //     'data' => '@nest',
+            //     'meta' => '@nest',
+            //     "schema" => "https://schema.org/"
+            // ],
+            '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
             'data' => [
                 // 'resolvers' => $this->resolvers,
                 'resolvers' => $resolver_paths,
@@ -243,6 +239,28 @@ class Router
                 //     '_kv' => [],
                 //     '_router' => []
                 // ],
+                ],
+            'meta' => (object) [
+                '@type' => 'schema:Message',
+                'schema:name' => 'URN Resolver',
+                'schema:dateCreated' => date("c"),
+                // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
+                "schema:potentialAction" => (object) [
+                    "schema:name" => "uptime",
+                    "schema:url" => "https://stats.uptimerobot.com/z6Y43IGQkL"
+                ]
+                // "schema:Message" => (object)  [
+                //     'schema:name' => 'URN Resolver',
+                //     // 'status_http_code' => 200,
+                //     'status_pages' => ['https://stats.uptimerobot.com/z6Y43IGQkL'],
+                //     'datetime' => date("c"),
+                // ]
+                // "schema:Message" => (object)  [
+                //     'schema:name' => 'URN Resolver',
+                //     // 'status_http_code' => 200,
+                //     'status_pages' => ['https://stats.uptimerobot.com/z6Y43IGQkL'],
+                //     'datetime' => date("c"),
+                // ]
             ]
           ];
 
