@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace URNResolver;
 
+date_default_timezone_set('UTC');
 define("ROOT_PATH", dirname(dirname(__FILE__)));
 define("RESOLVER_RULE_PATH", ROOT_PATH . '/public/.well-known/urn');
 
@@ -172,7 +173,9 @@ class Router
             '$schema' => 'https://purl.org/eticaai/urnresolver/jsonschema',
             '$id' => $this->active_base . $this->active_uri,
             'message' => 'URN Resolver',
-            'status' => 200,
+            'status_http_code' => 200,
+            'status_pages' => ['https://stats.uptimerobot.com/z6Y43IGQkL'],
+            'datetime' => date("c"),
             // 'resolvers' => $this->resolvers,
             'resolvers' => $resolver_paths,
             // '_debug' => [

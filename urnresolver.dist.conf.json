@@ -1,4 +1,5 @@
 {
   "//comment": "Rename urnresolver.dist.conf.json to urnresolver.conf.json",
-  "base": "http://localhost:8000"
+  "base": "http://localhost:8000",
+  "sla_uptime_page": "https://stats.uptimerobot.com/z6Y43IGQkL"
 }

@@ -17,19 +17,23 @@
               "index"
             ]
           },
-          "http_status": {
+          "status_http_code": {
             "type": "number",
             "minimum": 200,
             "maxium": 599
           },
           "resolvers": {
             "type": "object"
+          },
+          "status_pages": {
+            "type": "array"
           }
         }
       },
       "required": [
-        "http_status",
+        "status_http_code",
         "response_type",
+        "status_pages",
         "resolvers"
       ]
     }

@@ -232,6 +232,7 @@ Check [resolvers](resolvers/) folder.
 ## @TODO
 ### Load testing
 - https://gist.github.com/denji/8333630
+- Uptime robot bagdge https://github.com/badges/shields/issues/824
 
 ### Schemas
 - https://www.schemastore.org/json/

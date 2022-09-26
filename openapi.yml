@@ -1,3 +1,6 @@
+# Preview me online:
+# - https://editor.swagger.io/?url=https://raw.githubusercontent.com/EticaAI/urn-resolver/main/openapi.yml
+# - https://editor-next.swagger.io/?url=https://raw.githubusercontent.com/EticaAI/urn-resolver/main/openapi.yml
 openapi: 3.0.0
 info:
   version: 1.0.0
