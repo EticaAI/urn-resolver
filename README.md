@@ -50,7 +50,7 @@ The current implementation uses PHP. Tested with 7.4 and 8.1.
 ```bash
 # Get a copy
 git clone https://github.com/EticaAI/urn-resolver.git
-cd urn-resolver/public
+cd urn-resolver/app/public
 
 # Run PHP build-in server
 php -S localhost:8000
@@ -237,6 +237,8 @@ Check [resolvers](resolvers/) folder.
 ### Schemas
 - https://www.schemastore.org/json/
 - https://json-schema.org/learn/examples/geographical-location.schema.json
+- https://jsonapi.org/
+- https://jsonapi.org/schema
 -->
 
 ## License

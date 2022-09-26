@@ -28,7 +28,7 @@ DRY_RUN="${DRY_RUN-'1'}"
 
 # DEV_ROOT_BASE can be customized. Defaults to working dir
 # WARNING: the final / is very import for rsync. That's why we hardcoded here
-RSYNC_LOCAL="${ROOTDIR-$DEV_ROOT_BASE}/"
+RSYNC_LOCAL="${ROOTDIR-$DEV_ROOT_BASE}/app/"
 __RSYNC_REMOTE_DEFAULT="urneticaai@urn.etica.ai:/home/urneticaai/urn.etica.ai"
 RSYNC_REMOTE="${RSYNC_REMOTE-$__RSYNC_REMOTE_DEFAULT}"
 

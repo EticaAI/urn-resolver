@@ -170,7 +170,8 @@ class Router
         }
 
         $result = (object) [
-            '$schema' => 'https://purl.org/eticaai/urnresolver/jsonschema',
+            // '$schema' => 'https://purl.org/eticaai/urnresolver/jsonschema',
+            '$schema' => 'https://jsonapi.org/schema',
             '$id' => $this->active_base . $this->active_uri,
             'message' => 'URN Resolver',
             'status_http_code' => 200,

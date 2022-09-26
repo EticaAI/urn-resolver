@@ -25,7 +25,7 @@ set -e
 __ROOTDIR="$(pwd)"
 ROOTDIR="${ROOTDIR:-$__ROOTDIR}"
 WELL_KNOWN_SOURCE="$ROOTDIR/resolvers"
-WELL_KNOWN_PUBLIC="$ROOTDIR/public/.well-known/urn"
+WELL_KNOWN_PUBLIC="$ROOTDIR/app/public/.well-known/urn"
 
 #### functions _________________________________________________________________
 
