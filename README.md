@@ -232,6 +232,10 @@ Check [resolvers](resolvers/) folder.
 ## @TODO
 ### Load testing
 - https://gist.github.com/denji/8333630
+
+### Schemas
+- https://www.schemastore.org/json/
+- https://json-schema.org/learn/examples/geographical-location.schema.json
 -->
 
 ## License

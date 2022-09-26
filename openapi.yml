@@ -1,0 +1,17 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: URN Resolver
+  description: URN Resolver
+paths:
+  /:
+    get:
+      description: Index
+      responses:
+        "200":
+          description: Successful response
+servers:
+  - url: https://urn.etica.ai
+    description: URN Resolver EticaAI
+  - url: http://localhost:8000
+    description: localhost:8000

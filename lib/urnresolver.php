@@ -30,6 +30,7 @@ function debug()
 class Router
 {
     private $resolvers = array();
+    private $active_base;
     private $active_uri;
     private $active_urn = false;
     private $active_urn_to_uri = false;
@@ -40,6 +41,7 @@ class Router
 
     public function __construct()
     {
+        $this->active_base = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $this->active_uri = ltrim($_SERVER['REQUEST_URI'], '/');
         if (strpos($this->active_uri, 'urn:') == 0) {
             $this->active_urn = $this->active_uri;
@@ -146,6 +148,7 @@ class Router
         // This log really needs be reviewned later
         header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
         // header('Vary: Accept-Encoding');
+        header("Access-Control-Allow-Origin: *");
         header('Location: ' . $this->active_urn_to_uri);
         die();
         // header("HTTP/1.1 301 Moved Permanently");
@@ -154,6 +157,7 @@ class Router
     public function execute_welcome()
     {
         header("Content-type: application/json; charset=utf-8");
+        header("Access-Control-Allow-Origin: *");
         header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
 
         $resolver_paths = [];
@@ -165,6 +169,8 @@ class Router
         }
 
         $result = (object) [
+            '$schema' => 'https://purl.org/eticaai/urnresolver/jsonschema',
+            '$id' => $this->active_base . $this->active_uri,
             'message' => 'URN Resolver',
             'status' => 200,
             // 'resolvers' => $this->resolvers,

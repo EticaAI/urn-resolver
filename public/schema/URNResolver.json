@@ -1,0 +1,37 @@
+{
+  "$id": "https://purl.org/eticaai/urnresolver/jsonschema",
+  "//$id": "https://raw.githubusercontent.com/EticaAI/urn-resolver/main/public/schema/URNResolver.json",
+  "//$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    {
+      "title": "URNResolver index",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "response_type": {
+          "type": "string",
+          "//type": {
+            "type": "string",
+            "enum": [
+              "index"
+            ]
+          },
+          "http_status": {
+            "type": "number",
+            "minimum": 200,
+            "maxium": 599
+          },
+          "resolvers": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "http_status",
+        "response_type",
+        "resolvers"
+      ]
+    }
+  ]
+}
