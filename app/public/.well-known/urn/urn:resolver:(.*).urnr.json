@@ -1,4 +1,27 @@
 {
-  "urn_base": "urn:resolver:(.*)",
-  "urn_resolver_internal": true
+  "_meta": {
+    "spec": [
+      "https://en.wikipedia.org/wiki/LexML"
+    ],
+    "examples": [
+      {
+        "in.urn": "urn:lex:br:federal:lei:2008-06-19;11705",
+        "out.iri": "https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "in": {
+        "urn": "urn:resolver:(.*)"
+      },
+      "out": [
+        {
+          "iri": "_internal/index.php",
+          "lb_w": 100,
+          "http_status": 302
+        }
+      ]
+    }
+  ]
 }

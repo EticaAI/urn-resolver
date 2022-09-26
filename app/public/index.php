@@ -2,7 +2,8 @@
 
 
   require '../lib/urnresolver.php';
-  $router = new URNResolver\Router();
+  $config = new URNResolver\Config();
+  $router = new URNResolver\Router($config);
 
   $result = (object) [
     'message' => '@TODO',

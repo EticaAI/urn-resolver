@@ -53,7 +53,7 @@ git clone https://github.com/EticaAI/urn-resolver.git
 cd urn-resolver/app/public
 
 # Run PHP build-in server
-php -S localhost:8000
+php -S localhost:8000 index.php
 
 # Visit home page: http://localhost:8000/
 ```
@@ -239,6 +239,11 @@ Check [resolvers](resolvers/) folder.
 - https://json-schema.org/learn/examples/geographical-location.schema.json
 - https://jsonapi.org/
 - https://jsonapi.org/schema
+
+### Validators
+- https://validator.schema.org/
+- https://json-ld.org/playground/
+  - https://json-ld.org/spec/latest/json-ld/#nested-properties
 -->
 
 ## License

@@ -28,6 +28,52 @@ function debug()
     return $info;
 }
 
+class Config
+{
+    public string $base_iri;
+    public array $resolver_status_pages;
+
+    public function __construct()
+    {
+        $source_config = ROOT_PATH . '/urnresolver.dist.conf.json';
+        $conf = json_decode(file_get_contents($source_config), true);
+        if (\file_exists(ROOT_PATH . '/urnresolver.conf.json')) {
+            $source_config2 = ROOT_PATH . '/urnresolver.conf.json';
+            $conf2 = json_decode(file_get_contents($source_config2), true);
+            $conf = array_replace_recursive($conf, $conf2);
+        }
+        // $json = file_get_contents($source_config);
+        // die($json);
+
+        // var_dump($conf);
+        // die($conf);
+
+        $this->base_iri = $conf['base_iri'] ?? null;
+        $this->resolver_status_pages = $conf['resolver_status_pages'] ?? null;
+        // $this->aaa = $conf->aaa ?? null;
+    }
+}
+
+class Response
+{
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    public function execute_redirect($objective_iri)
+    {
+        http_response_code($this->active_urn_to_httpstatus);
+        // @see https://developers.cloudflare.com/cache/about/cache-control/
+        // This log really needs be reviewned later
+        header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
+        // header('Vary: Accept-Encoding');
+        header("Access-Control-Allow-Origin: *");
+        // header('Location: ' . $this->active_urn_to_uri);
+        header('Location: ' . $objective_iri);
+    }
+}
+
 class Router
 {
     private $resolvers = array();
@@ -40,8 +86,9 @@ class Router
     private $active_rule_conf = false;
     private $_logs = [];
 
-    public function __construct()
+    public function __construct(Config $config)
     {
+        $this->config = $config;
         $this->active_base = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $this->active_uri = ltrim($_SERVER['REQUEST_URI'], '/');
         if (strpos($this->active_uri, 'urn:') == 0) {
@@ -172,19 +219,31 @@ class Router
         $result = (object) [
             // '$schema' => 'https://purl.org/eticaai/urnresolver/jsonschema',
             '$schema' => 'https://jsonapi.org/schema',
-            '$id' => $this->active_base . $this->active_uri,
-            'message' => 'URN Resolver',
-            'status_http_code' => 200,
-            'status_pages' => ['https://stats.uptimerobot.com/z6Y43IGQkL'],
-            'datetime' => date("c"),
-            // 'resolvers' => $this->resolvers,
-            'resolvers' => $resolver_paths,
-            // '_debug' => [
-            //     '_REQUEST' => $_REQUEST,
-            //     'REQUEST_URI' => $_SERVER['REQUEST_URI'],
-            //     '_kv' => [],
-            //     '_router' => []
-            // ],
+            // '$id' => $this->active_base . $this->active_uri,
+            '@context' => (object)  [
+                '@version' => 1.1,
+                'data' => '@nest',
+                'meta' => '@nest',
+                "schema" => "https://schema.org/"
+            ],
+            'meta' => (object) [
+                "schema:Message" => (object)  [
+                    'schema:comment' => 'URN Resolver',
+                    'status_http_code' => 200,
+                    'status_pages' => ['https://stats.uptimerobot.com/z6Y43IGQkL'],
+                    'datetime' => date("c"),
+                ]
+            ],
+            'data' => [
+                // 'resolvers' => $this->resolvers,
+                'resolvers' => $resolver_paths,
+                // '_debug' => [
+                //     '_REQUEST' => $_REQUEST,
+                //     'REQUEST_URI' => $_SERVER['REQUEST_URI'],
+                //     '_kv' => [],
+                //     '_router' => []
+                // ],
+            ]
           ];
 
         http_response_code(200);
