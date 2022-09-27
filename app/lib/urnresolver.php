@@ -152,9 +152,39 @@ class Router
             // array_push($this->_logs, $in_urn_rule);
         }
 
+        $rule = null;
+        // First, we try exact match
+        foreach ($this->active_rule_conf->rules as $key => $potential_rule) {
+            // var_dump($potential_rule);
+            if ($this->active_urn === $potential_rule->in->urn) {
+                $rule = $potential_rule;
+                break;
+            }
+        }
+        if ($rule === null) {
+            foreach ($this->active_rule_conf->rules as $key => $potential_rule) {
+                $urn_pattern_2 = '/' . $potential_rule->in->urn . '/';
+                $matches = null;
+                if (preg_match($urn_pattern_2, $this->active_uri, $matches)) {
+                    $rule = $potential_rule;
+                    foreach ($matches as $key => $value) {
+                        $all_options['{{ in[' . (string) $key . '] }}'] = $value;
+                        // array_push($this->_logs, $in_urn_rule);
+                    }
+                    break;
+                }
+            }
+        }
+        if ($rule === null) {
+            $this->_is_error = true;
+            return false;
+        }
+        // var_dump($rule);
+        // die('teste');
+
         // $out_iri = $this->active_rule_conf->rules[0]['iri'];
         // @TODO implement load balancing on this part: out[0]
-        $rule = $this->active_rule_conf->rules[0];
+        // $rule = $this->active_rule_conf->rules[0];
 
         if (is_array($rule->out)) {
             $out_rule = $rule->out[0];

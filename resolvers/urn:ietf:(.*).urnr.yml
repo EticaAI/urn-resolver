@@ -13,16 +13,20 @@ _meta:
   examples:
     - in.urn: urn:ietf:rfc:2141
       out.[0].iri: https://www.rfc-editor.org/info/rfc2141
-    - in.urn: urn:ietf:rfc:2141
-      out.[0].iri: https://www.rfc-editor.org/rfc/rfc2141.html
-# data:
-#   # No contextual data need here
+    - in.urn: urn:ietf:bpc:47
+      out.[0].iri: https://www.rfc-editor.org/info/bcp47
+    # - in.urn: urn:ietf:rfc:2141
+    #   out.[0].iri: https://www.rfc-editor.org/rfc/rfc2141.html
+
 rules:
   - in:
       urn: "urn:ietf:rfc:(.*)"
     out:
       - iri: "https://www.rfc-editor.org/info/rfc{{ in[1] }}"
-        http_status: 302
+  - in:
+      urn: "urn:ietf:bcp:(.*)"
+    out:
+      - iri: "https://www.rfc-editor.org/info/bcp{{ in[1] }}"
   - in:
       urn: "urn:ietf:(.*)"
     out:

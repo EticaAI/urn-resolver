@@ -54,7 +54,6 @@ git clone https://github.com/EticaAI/urn-resolver.git
 cd urn-resolver/app/public
 
 # Run PHP build-in server
-php -S localhost:8000 index.php
 php -S localhost:8000 router.php
 
 # Visit home page: http://localhost:8000/
@@ -66,17 +65,28 @@ php -S localhost:8000 router.php
 > - jq: <https://stedolan.github.io/jq/>
 
 ```bash
+## Home page (show content); curl parameters used:
+#   (-L) --location : follow links
+#   (-s) --silent   : do not show transfer
+# (next 2 commands are equivalent)
+curl --location --silent 'http://localhost:8000/'
+curl -Ls 'http://localhost:8000/'
 
-## Home page; curl parameters used:
-#   --location (-L):follow links
-#   --silent (-s): do not show transfer
-curl --location --silent http://localhost:8000/
+## IETF URN: curl parameters used to show only headers (great to see redirects)
+#   (-I) --head     : Show document info only
+# (next 3 commands are equivalent)
+curl --location --silent --head 'http://localhost:8000/urn:ietf:rfc:2141'
+curl -LsI 'http://localhost:8000/urn:ietf:rfc:2141'
+curl -Ls 'http://localhost:8000/urn:ietf:rfc:2141' --head
+
+## urn:w3id:un/fao (this example have several redirects; 6 as 2022-09-27)
+curl -Ls 'http://localhost:8000/urn:w3id:un/fao' --head
 
 ## home page, but with jq
 curl -Ls http://localhost:8000/ | jq
 
 ## urn:resolver:ping; This one migth not return json
-curl -Ls http://localhost:8000/urn:resolver:ping
+curl -Ls 'http://localhost:8000/urn:resolver:ping'
 
 ```
 

@@ -5,4 +5,6 @@ urn:geo:(.*).urnr.json
 urn:ietf:(.*).urnr.json
 urn:issn:(.*).urnr.json
 urn:lex:br:(.*).urnr.json
+urn:purl:(.*).urnr.json
 urn:resolver:(.*).urnr.json
+urn:w3id:(.*).urnr.json

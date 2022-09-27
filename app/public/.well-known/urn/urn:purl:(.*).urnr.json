@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "spec": [
+      "https://en.wikipedia.org/wiki/Persistent_uniform_resource_locator"
+    ],
+    "examples": [
+      {
+        "in.urn": "urn:purl:obo/go/",
+        "out.[0].iri": "https://purl.org/obo/go/",
+        "out.[1].iri": "https://purl.archive.org/obo/go/",
+        "out.[2].iri": "https://purl.oclc.org/obo/go/"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "in": {
+        "urn": "urn:purl:(.*)"
+      },
+      "lb": true,
+      "out": [
+        {
+          "iri": "https://purl.org/{{ in[1] }}"
+        },
+        {
+          "iri": "https://purl.archive.org/{{ in[1] }}"
+        },
+        {
+          "iri": "https://purl.oclc.org/{{ in[1] }}"
+        }
+      ]
+    }
+  ]
+}

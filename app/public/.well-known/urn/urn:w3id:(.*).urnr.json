@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "spec": [
+      "https://en.wikipedia.org/wiki/Persistent_uniform_resource_locator"
+    ],
+    "examples": [
+      {
+        "in.urn": "urn:w3id:un/fao",
+        "out.[0].iri": "https://w3id.org/un/fao"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "in": {
+        "urn": "urn:w3id:(.*)"
+      },
+      "lb": true,
+      "out": [
+        {
+          "iri": "https://w3id.org/{{ in[1] }}"
+        }
+      ]
+    }
+  ]
+}
