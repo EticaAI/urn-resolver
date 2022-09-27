@@ -54,6 +54,7 @@ cd urn-resolver/app/public
 
 # Run PHP build-in server
 php -S localhost:8000 index.php
+php -S localhost:8000 router.php
 
 # Visit home page: http://localhost:8000/
 ```

@@ -8,11 +8,14 @@
 
 _meta:
   spec:
-    - https://en.wikipedia.org/wiki/LexML
-    # - https://en.wikipedia.org/wiki/EUR-Lex
+    - https://github.com/EticaAI/urn-resolver
   examples:
     - in.urn: urn:resolver:ping
-      out.iri: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
+      out.iri: "{{ urnresolver }}/_/resolver/ping.php?{{ unixtime }}"
+    # - in.urn: urn:resolver:ping
+    #   out.iri: "{{ urnresolver_base.self }}/_/resolver/ping.php"
+      # out.iri: "{{ base_iri }}/_/resolver/ping.php"
+
 rules:
   - in:
       urn: "urn:resolver:(.*)"
@@ -20,9 +23,15 @@ rules:
       - iri: "_internal/index.php"
         lb_w: 100
         http_status: 302
+
   - in:
       urn: "urn:resolver:ping"
     out:
-      - iri: "_internal/pong.php"
-        lb_w: 100
+      - iri: "{{ urnresolver_base.self }}/_/resolver/pong.php"
+        http_status: 302
+
+  - in:
+      urn: "urn:resolver:cron:run"
+    out:
+      - iri: "{{ urnresolver_base.self }}/_/resolver/cron.php"
         http_status: 302
