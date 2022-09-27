@@ -5,6 +5,7 @@
 ### adress reverse search
 - https://nominatim.openstreetmap.org/
   - https://nominatim.org/release-docs/develop/api/Overview/
+- https://github.com/public-apis/public-apis#geocoding
 
 ### map data
 
@@ -21,3 +22,13 @@
 
 ### Etc
 - https://wiki.openstreetmap.org/wiki/SPARQL_vs_Overpass_QL_examples
+- Data portals
+  - https://dataportals.org/
+
+#### Generic source for APIs
+- https://github.com/TonnyL/Awesome_APIs
+- https://github.com/search?q=Awesome+APIs
+
+#### temp
+- https://github.com/dr5hn/countries-states-cities-database
+  - (likely wikidata?)

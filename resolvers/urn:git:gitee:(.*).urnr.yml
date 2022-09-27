@@ -1,0 +1,15 @@
+_meta:
+  spec:
+    - https://gitee.com/api/v5/swagger
+  examples:
+    - in.urn: urn:git:gitee:search/repositories?q=rdf
+      out.[0].iri: https://gitee.com/api/v5/search/repositories?q=rdf
+    - in.urn: urn:git:gitee:search/users?q=username
+      out.[0].iri: https://gitee.com/api/v5/search/users?q=username
+  # urn_index:
+  #   - "urn:git:gitee:"
+rules:
+  - in:
+      urn: "urn:git:gitee:(.*)"
+    out:
+      - iri: "https://gitee.com/api/v5/{{ in[1] }}"

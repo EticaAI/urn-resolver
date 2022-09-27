@@ -7,6 +7,10 @@
       {
         "in.urn": "urn:git:github/search/repositories?q=tetris+language:assembly&sort=stars&order=desc",
         "out.[0].iri": "https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc"
+      },
+      {
+        "in.urn": "urn:git:github/search/repositories?q=tetris+language:assembly&sort=stars&order=desc",
+        "out.[0].iri": "https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc"
       }
     ],
     "urn_index": [

@@ -88,12 +88,15 @@ curl -Ls http://localhost:8000/ | jq
 ## urn:resolver:ping; This one migth not return json
 curl -Ls 'http://localhost:8000/urn:resolver:ping'
 
-## Other examples
-# Index
+#### Other not so documented examples __________________________________________
+## GitHub
+# index
 curl -Ls 'http://localhost:8000/urn:git:github:' | jq
 # repositories for org=EticaAI
 curl -Ls 'http://localhost:8000/urn:git:github:orgs/EticaAI/repos' | jq
-
+## Gitee
+# (example query) q=username
+curl -Ls 'urn:git:gitee:search/users?q=username' | jq
 
 ```
 
