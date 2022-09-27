@@ -4,11 +4,11 @@
     "examples": [
       {
         "in.urn": "urn:issn:1476-4687",
-        "out.iri": "https://urn.issn.org/urn:issn:1476-4687"
+        "out.[0].iri": "https://urn.issn.org/urn:issn:1476-4687"
       },
       {
         "in.urn": "urn:ISSN:1476-4687",
-        "out.iri": "https://urn.issn.org/urn:issn:1476-4687"
+        "out.[0].iri": "https://urn.issn.org/urn:issn:1476-4687"
       }
     ]
   },

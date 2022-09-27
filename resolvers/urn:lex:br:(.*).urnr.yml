@@ -7,7 +7,7 @@ _meta:
     # - https://en.wikipedia.org/wiki/EUR-Lex
   examples:
     - in.urn: urn:lex:br:federal:lei:2008-06-19;11705
-      out.iri: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
+      out.[0].iri: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
 # data:
 #   # No contextual data need here
 rules:

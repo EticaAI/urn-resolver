@@ -6,7 +6,7 @@
     "examples": [
       {
         "in.urn": "urn:resolver:ping",
-        "out.iri": "{{ urnresolver }}/_/resolver/ping.php?{{ unixtime }}"
+        "out.[0].iri": "{{ urnresolver }}/_/resolver/ping.php?{{ unixtime }}"
       }
     ]
   },
@@ -17,9 +17,7 @@
       },
       "out": [
         {
-          "iri": "_internal/index.php",
-          "lb_w": 100,
-          "http_status": 302
+          "iri": "_/resolver/ping.php"
         }
       ]
     },
@@ -29,8 +27,7 @@
       },
       "out": [
         {
-          "iri": "{{ urnresolver_base.self }}/_/resolver/pong.php",
-          "http_status": 302
+          "iri": "{{ urnresolver_base.self }}/_/resolver/pong.php"
         }
       ]
     },
@@ -40,8 +37,7 @@
       },
       "out": [
         {
-          "iri": "{{ urnresolver_base.self }}/_/resolver/cron.php",
-          "http_status": 302
+          "iri": "{{ urnresolver_base.self }}/_/resolver/cron.php"
         }
       ]
     }

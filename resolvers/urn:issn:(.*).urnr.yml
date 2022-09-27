@@ -2,9 +2,9 @@ _meta:
   spec: https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Use_in_URNs
   examples:
     - in.urn: urn:issn:1476-4687
-      out.iri: https://urn.issn.org/urn:issn:1476-4687
+      out.[0].iri: https://urn.issn.org/urn:issn:1476-4687
     - in.urn: urn:ISSN:1476-4687
-      out.iri: https://urn.issn.org/urn:issn:1476-4687
+      out.[0].iri: https://urn.issn.org/urn:issn:1476-4687
 rules:
   - in:
       urn: "urn:issn:(.*)"

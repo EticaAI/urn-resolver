@@ -12,9 +12,9 @@ _meta:
   spec: https://datatracker.ietf.org/doc/html/rfc2648
   examples:
     - in.urn: urn:ietf:rfc:2141
-      out.iri: https://www.rfc-editor.org/info/rfc2141
+      out.[0].iri: https://www.rfc-editor.org/info/rfc2141
     - in.urn: urn:ietf:rfc:2141
-      out.iri: https://www.rfc-editor.org/rfc/rfc2141.html
+      out.[0].iri: https://www.rfc-editor.org/rfc/rfc2141.html
 # data:
 #   # No contextual data need here
 rules:

@@ -85,13 +85,18 @@ class Router
     private $active_rule_prefix = false;
     private $active_rule_conf = false;
     private $_logs = [];
+    private $_is_error = null;
+    private $_is_home = false;
 
     public function __construct(Config $config)
     {
         $this->config = $config;
         $this->active_base = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $this->active_uri = ltrim($_SERVER['REQUEST_URI'], '/');
-        if (strpos($this->active_uri, 'urn:') == 0) {
+
+        if (strlen($this->active_uri) == 0) {
+            $this->_is_home = true;
+        } elseif (strpos($this->active_uri, 'urn:') == 0) {
             $this->active_urn = $this->active_uri;
         }
         // $this->resolvers = [];
@@ -114,6 +119,7 @@ class Router
             return strlen($b) <=> strlen($a);
         });
 
+        $this->_is_error = true;
         foreach ($urns_pattern_list as $key => $urn_pattern) {
             $full_pattern = '/' . $urn_pattern . '/i';
             $matches = null;
@@ -125,6 +131,7 @@ class Router
                 $json_data = json_decode($json, false);
                 // $this->active_rule_conf = [$json_data, $matches, $urn_pattern];
                 $this->active_rule_conf = $json_data;
+                $this->_is_error = false;
                 $this->_rule_calc($full_pattern);
                 break;
             }
@@ -162,6 +169,11 @@ class Router
             if ($out_http_status) {
                 $this->active_urn_to_httpstatus = $out_http_status;
             }
+        }
+
+        if ($this->active_rule_conf == false && empty($this->active_urn)) {
+            $this->_is_error = true;
+            return false;
         }
 
         // array_push($this->_logs, $out_iri);
@@ -204,6 +216,26 @@ class Router
 
     public function execute_welcome()
     {
+        if (!$this->_is_home && $this->_is_error) {
+            http_response_code(404);
+            header("Content-type: application/json; charset=utf-8");
+            header("Access-Control-Allow-Origin: *");
+            header('Cache-Control: public, max-age=900, s-maxage=900, stale-while-revalidate=120');
+
+            $result = (object) [
+                '$schema' => 'https://jsonapi.org/schema',
+                '$id' => $this->active_base,
+                '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+                'error' => [
+                    'status' => 404,
+                    'title' => 'Not found',
+                    ],
+              ];
+
+            echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            die();
+        }
+
         header("Content-type: application/json; charset=utf-8");
         header("Access-Control-Allow-Origin: *");
         header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
@@ -216,29 +248,12 @@ class Router
             $resolver_paths[$key] = $path;
         }
 
-        // https://jsonapi.org/format/
         $result = (object) [
-            // '$schema' => 'https://purl.org/eticaai/urnresolver/jsonschema',
             '$schema' => 'https://jsonapi.org/schema',
             '$id' => $this->active_base . $this->active_uri,
-            // 'id' => $this->active_base . $this->active_uri,
-            // '@context' => (object)  [
-            //     '@version' => 1.1,
-            //     '$id' => '@id',
-            //     'data' => '@nest',
-            //     'meta' => '@nest',
-            //     "schema" => "https://schema.org/"
-            // ],
             '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
             'data' => [
-                // 'resolvers' => $this->resolvers,
                 'resolvers' => $resolver_paths,
-                // '_debug' => [
-                //     '_REQUEST' => $_REQUEST,
-                //     'REQUEST_URI' => $_SERVER['REQUEST_URI'],
-                //     '_kv' => [],
-                //     '_router' => []
-                // ],
                 ],
             'meta' => (object) [
                 '@type' => 'schema:Message',
@@ -249,18 +264,6 @@ class Router
                     "schema:name" => "uptime",
                     "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
                 ]
-                // "schema:Message" => (object)  [
-                //     'schema:name' => 'URN Resolver',
-                //     // 'status_http_code' => 200,
-                //     'status_pages' => ['https://stats.uptimerobot.com/jYDZlFY8jq'],
-                //     'datetime' => date("c"),
-                // ]
-                // "schema:Message" => (object)  [
-                //     'schema:name' => 'URN Resolver',
-                //     // 'status_http_code' => 200,
-                //     'status_pages' => ['https://stats.uptimerobot.com/jYDZlFY8jq'],
-                //     'datetime' => date("c"),
-                // ]
             ]
           ];
 

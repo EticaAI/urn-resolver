@@ -17,6 +17,7 @@ The current implementation of opting for server-based comes from w3id (<https://
 
 - [The URN Resolver server](#the-urn-resolver-server)
     - [How to run local node](#how-to-run-local-node)
+        - [Your first curl + jq commands](#your-first-curl--jq-commands)
     - [How to run production servers](#how-to-run-production-servers)
         - [Your first production single node recommended](#your-first-production-single-node-recommended)
         - [Your first high-availability cluster deployment](#your-first-high-availability-cluster-deployment)
@@ -57,6 +58,26 @@ php -S localhost:8000 index.php
 php -S localhost:8000 router.php
 
 # Visit home page: http://localhost:8000/
+```
+
+#### Your first curl + jq commands
+
+> - curl: <https://curl.se/>
+> - jq: <https://stedolan.github.io/jq/>
+
+```bash
+
+## Home page; curl parameters used:
+#   --location (-L):follow links
+#   --silent (-s): do not show transfer
+curl --location --silent http://localhost:8000/
+
+## home page, but with jq
+curl -Ls http://localhost:8000/ | jq
+
+## urn:resolver:ping; This one migth not return json
+curl -Ls http://localhost:8000/urn:resolver:ping
+
 ```
 
 ### How to run production server(s)

@@ -5,11 +5,11 @@
     "examples": [
       {
         "in.urn": "urn:ietf:rfc:2141",
-        "out.iri": "https://www.rfc-editor.org/info/rfc2141"
+        "out.[0].iri": "https://www.rfc-editor.org/info/rfc2141"
       },
       {
         "in.urn": "urn:ietf:rfc:2141",
-        "out.iri": "https://www.rfc-editor.org/rfc/rfc2141.html"
+        "out.[0].iri": "https://www.rfc-editor.org/rfc/rfc2141.html"
       }
     ]
   },
