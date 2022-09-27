@@ -12,3 +12,12 @@
 - https://fieldmaps.io/
 - https://geoboundaries.org/
 - https://naturalearthdata.com/
+
+#### OSM
+- https://overpass-turbo.eu/
+  - https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL
+  - https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_API_by_Example
+
+
+### Etc
+- https://wiki.openstreetmap.org/wiki/SPARQL_vs_Overpass_QL_examples

@@ -88,6 +88,13 @@ curl -Ls http://localhost:8000/ | jq
 ## urn:resolver:ping; This one migth not return json
 curl -Ls 'http://localhost:8000/urn:resolver:ping'
 
+## Other examples
+# Index
+curl -Ls 'http://localhost:8000/urn:git:github:' | jq
+# repositories for org=EticaAI
+curl -Ls 'http://localhost:8000/urn:git:github:orgs/EticaAI/repos' | jq
+
+
 ```
 
 ### How to run production server(s)
