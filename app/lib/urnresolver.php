@@ -247,18 +247,18 @@ class Router
                 // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
                 "schema:potentialAction" => (object) [
                     "schema:name" => "uptime",
-                    "schema:url" => "https://stats.uptimerobot.com/z6Y43IGQkL"
+                    "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
                 ]
                 // "schema:Message" => (object)  [
                 //     'schema:name' => 'URN Resolver',
                 //     // 'status_http_code' => 200,
-                //     'status_pages' => ['https://stats.uptimerobot.com/z6Y43IGQkL'],
+                //     'status_pages' => ['https://stats.uptimerobot.com/jYDZlFY8jq'],
                 //     'datetime' => date("c"),
                 // ]
                 // "schema:Message" => (object)  [
                 //     'schema:name' => 'URN Resolver',
                 //     // 'status_http_code' => 200,
-                //     'status_pages' => ['https://stats.uptimerobot.com/z6Y43IGQkL'],
+                //     'status_pages' => ['https://stats.uptimerobot.com/jYDZlFY8jq'],
                 //     'datetime' => date("c"),
                 // ]
             ]
