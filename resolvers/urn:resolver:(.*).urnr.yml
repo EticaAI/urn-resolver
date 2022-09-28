@@ -7,31 +7,40 @@
 # https://stats.uptimerobot.com/jYDZlFY8jq
 
 _meta:
+  _internal: true
   Cache-Control:
     _cc_mode: internal
-  spec:
-    - https://github.com/EticaAI/urn-resolver
+
   examples:
     - in.urn: urn:resolver:ping
-      out.[0].iri: "{{ urnresolver }}/_/resolver/ping.php"
+      # internal: true
+    - in.urn: urn:resolver:index
+      # internal: true
+    # - in.urn: urn:resolver:ping
+    #   # out.[0].iri: "{{ urnresolver }}/_/resolver/ping.php"
     # - in.urn: urn:resolver:ping
     #   out.iri: "{{ urnresolver_base.self }}/_/resolver/ping.php"
       # out.iri: "{{ base_iri }}/_/resolver/ping.php"
+  spec:
+    - https://github.com/EticaAI/urn-resolver
 
 rules:
   - in:
       urn: "urn:resolver:(.*)"
-    out:
-      - iri: "_/resolver/ping.php"
+    # internal: true
+    # out:
+    #   - iri: "_/resolver/ping.php"
 
   - in:
       urn: "urn:resolver:ping"
-    out:
-      # - iri: "{{ urnresolver_base.self }}/_/resolver/pong.php"
-      - iri: "{{ urnresolver }}/_/resolver/pong.php"
+    # internal: true
+    # out:
+    #   # - iri: "{{ urnresolver_base.self }}/_/resolver/pong.php"
+    #   - iri: "{{ urnresolver }}/_/resolver/pong.php"
 
   - in:
       urn: "urn:resolver:cron:run"
-    out:
-      # - iri: "{{ urnresolver_base.self }}/_/resolver/cron.php"
-      - iri: "{{ urnresolver }}/_/resolver/cron.php"
+    # internal: true
+    # out:
+    #   # - iri: "{{ urnresolver_base.self }}/_/resolver/cron.php"
+    #   - iri: "{{ urnresolver }}/_/resolver/cron.php"

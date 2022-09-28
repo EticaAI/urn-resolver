@@ -24,17 +24,30 @@
 //   http_response_code(500);
 //   die();
 
-  if ($router->is_success()){
-    $router->execute();
-  } else {
-    $router->execute_welcome();
-    header("Content-type: application/json; charset=utf-8");
-    // @see https://web.dev/stale-while-revalidate/
-    // header('Cache-Control: public, max-age=3600, s-maxage=120, stale-while-revalidate=600, stale-if-error=3600');
-    // header('Cache-Control: public, max-age=3600, s-maxage=30, stale-while-revalidate=3600, stale-if-error=3600');
-    header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
-    // header('Vary: Accept-Encoding');
-    // http_response_code(500);
-    echo json_encode($result, JSON_PRETTY_PRINT);
+  // @TODO implement some more advanced try/catch here to force return
+  //       json even if something not planned happens.
+  try {
+    if ($router->is_success()){
+      $router->execute();
+    } else {
+      $router->execute_welcome();
+      header("Content-type: application/json; charset=utf-8");
+      header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
+      echo json_encode($result, JSON_PRETTY_PRINT);
+    }
   }
+  // catch (\Throwable $t) {
+  catch (Error $e) {
+    // echo "caught!\n";
+    $data = [
+      'error' => [
+        'status' => 500,
+        'title' => 'Internal server error'
+      ]
+    ];
+    // echo $t->getMessage(), " at ", $t->getFile(), ":", $t->getLine(), "\n";
+    echo json_encode( $data, JSON_PRETTY_PRINT);
+    die;
+  }
+
 

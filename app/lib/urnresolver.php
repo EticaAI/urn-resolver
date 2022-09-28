@@ -89,7 +89,7 @@ class Response
         's_maxage' => 'max-age',
         's_maxage' => 's-maxage',
         'stale_while_revalidate' => 'stale-while-revalidate',
-        'stale-if-error' => 'stale-if-error',
+        'stale_if_error' => 'stale-if-error',
     ];
 
     public function __construct(Config $config, string $mode = 'default')
@@ -153,6 +153,8 @@ class Response
         // string $data,
         int $http_status_code = 404
     ) {
+        $this->_set_options($this->global_conf['Cache-Control']['default404']);
+
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
         header("Access-Control-Allow-Origin: *");
@@ -201,19 +203,42 @@ class Response
  */
 class ResponseURNResolver
 {
-    public function ping()
+    public int $http_status = 200;
+    public string $urn;
+    public $data;
+    public $errors;
+
+
+    public function __construct($urn)
     {
-        $resp_data = [
-            'message' => "PONG"
-        ];
-        return $resp_data;
+        $this->urn = $urn;
     }
 
-    public function get_result(string $urnresolver_urn)
+
+    public function execute()
     {
         if ($urnresolver_urn === 'urn:resolver:ping') {
-            return $this->ping();
+            return $this->operation_ping();
         }
+        $this->http_status = 501; // 501 Not Implemented
+        $errors = [
+            'status' => 501,
+            'title' => 'Not Implemented'
+        ];
+        return $this->is_success();
+    }
+
+    public function is_success()
+    {
+        return empty($this->errors);
+    }
+
+    public function operation_ping()
+    {
+        $this->data = [
+            'message' => "PONG"
+        ];
+        return $this->is_success();
     }
 }
 
@@ -231,6 +256,7 @@ class Router
     private array $_logs = [];
     private ?bool $_is_error = null;
     private ?bool $_is_home = false;
+    private bool $_internal = false;
 
     public function __construct(Config $config)
     {
@@ -287,6 +313,15 @@ class Router
     // private function _rule_calc($in_urn_rule, $active_rule)
     private function _rule_calc(string $urn_pattern)
     {
+        if (isset($this->active_rule_conf->_meta) && !empty($this->active_rule_conf->_meta->_internal)) {
+            // urn:resolver:(*)
+            $this->_internal = true;
+            return null;
+        }
+
+        // var_dump($this->active_rule_conf);
+        // die;
+
         $all_options = [];
         // $in_urn_rule = 'TODO';
         $matches = null;
@@ -297,16 +332,22 @@ class Router
         }
 
         $rule = null;
+        // var_dump($urn_pattern);die;
         // First, we try exact match
         foreach ($this->active_rule_conf->rules as $key => $potential_rule) {
-            // var_dump($potential_rule);
             if ($this->active_urn === $potential_rule->in->urn) {
                 $rule = $potential_rule;
+                // var_dump($potential_rule); die;
                 break;
             }
         }
         if ($rule === null) {
             foreach ($this->active_rule_conf->rules as $key => $potential_rule) {
+                if (empty($potential_rule->out)) {
+                    // Rules without out rules cant be generalized
+                    continue;
+                }
+
                 $urn_pattern_2 = '/' . $potential_rule->in->urn . '/';
                 $matches = null;
                 if (preg_match($urn_pattern_2, $this->active_uri, $matches)) {
@@ -319,7 +360,7 @@ class Router
                 }
             }
         }
-        if ($rule === null) {
+        if ($rule === null || empty($rule->out)) {
             $this->_is_error = true;
             return false;
         }
@@ -381,7 +422,12 @@ class Router
         // die($this->active_urn);
         // $mode = 'default';
         if (strpos($this->active_urn, 'urn:resolver:') === 0) {
+            $urnr = new ResponseURNResolver($this->active_urn);
+            if ($urnr->execute()) {
+                $data = $urnr->data;
+            }
             $mode = 'internal';
+            $resp = new Response($this->config, $mode);
         }
         // die($mode);
         $resp = new Response($this->config, $mode);

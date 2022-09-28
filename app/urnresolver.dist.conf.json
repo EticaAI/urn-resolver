@@ -10,6 +10,20 @@
       "stale-while-revalidate": 600,
       "stale-if-error": 600
     },
+    "default404": {
+      "_cc_prefix": "public",
+      "max-age": 900,
+      "s-maxage": 60,
+      "stale-while-revalidate": 900,
+      "stale-if-error": 900
+    },
+    "default410": {
+      "_cc_prefix": "public",
+      "max-age": 3600,
+      "s-maxage": 600,
+      "stale-while-revalidate": 600,
+      "stale-if-error": 600
+    },
     "critical": {
       "_cc_prefix": "public",
       "max-age": 30,
