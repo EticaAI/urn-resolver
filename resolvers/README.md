@@ -32,3 +32,6 @@
 #### temp
 - https://github.com/dr5hn/countries-states-cities-database
   - (likely wikidata?)
+- Examples of full return per adm region
+  - https://restcountries.com/v3.1/alpha?codes=bra (docs: https://restcountries.com/)
+  - http://www.wikidata.org/wiki/Special:EntityData/Q155.ttl

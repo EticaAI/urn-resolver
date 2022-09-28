@@ -61,9 +61,9 @@ class Response
         $this->config = $config;
     }
 
-    public function execute_redirect($objective_iri)
+    public function execute_redirect(string $objective_iri, int $http_status_code = 302)
     {
-        http_response_code($this->active_urn_to_httpstatus);
+        http_response_code($http_status_code);
         // @see https://developers.cloudflare.com/cache/about/cache-control/
         // This log really needs be reviewned later
         header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
@@ -71,12 +71,14 @@ class Response
         header("Access-Control-Allow-Origin: *");
         // header('Location: ' . $this->active_urn_to_uri);
         header('Location: ' . $objective_iri);
+        die();
     }
 }
 
 class Router
 {
-    private $resolvers = array();
+    private Config $config;
+    private array $resolvers = array();
     private $active_base;
     private $active_uri;
     private $active_urn = false;
@@ -84,9 +86,9 @@ class Router
     private $active_urn_to_httpstatus = 302;
     private $active_rule_prefix = false;
     private $active_rule_conf = false;
-    private $_logs = [];
-    private $_is_error = null;
-    private $_is_home = false;
+    private array $_logs = [];
+    private ?bool $_is_error = null;
+    private ?bool $_is_home = false;
 
     public function __construct(Config $config)
     {
@@ -233,6 +235,11 @@ class Router
 
     public function execute()
     {
+        $resp = new Response($this->config);
+
+        $resp->execute_redirect($this->active_urn_to_uri, $this->active_urn_to_httpstatus);
+        die();
+
         http_response_code($this->active_urn_to_httpstatus);
         // @see https://developers.cloudflare.com/cache/about/cache-control/
         // This log really needs be reviewned later
