@@ -75,22 +75,108 @@ class Config
 
 class Response
 {
+    private $global_conf;
     private string $_cc_prefix = 'public';
     private int $max_age = 0;
     private int $s_maxage = 0;
     private int $stale_while_revalidate = 0;
     private int $stale_if_error = 0;
 
+    private array $_opts = [
+        // '_cc_mode' => '_cc_mode', // special case, pre initialize defaults
+        '_cc_prefix' => '_cc_prefix',
+        'max_age' => 'max-age',
+        's_maxage' => 'max-age',
+        's_maxage' => 's-maxage',
+        'stale_while_revalidate' => 'stale-while-revalidate',
+        'stale-if-error' => 'stale-if-error',
+    ];
+
     public function __construct(Config $config, string $mode = 'default')
     {
-        $this->config = $config->global_conf;
-        $cc_active = $this->config['Cache-Control'][$mode];
+        $this->global_conf = $config->global_conf;
+        $cc_active = $this->global_conf['Cache-Control'][$mode];
+        $this->_set_options($cc_active);
+    }
 
-        $this->_cc_prefix = $cc_active['_cc_prefix'];
-        $this->max_age = $cc_active['max-age'];
-        $this->s_maxage = $cc_active['s-maxage'];
-        $this->stale_while_revalidate = $cc_active['stale-while-revalidate'];
-        $this->stale_if_error = $cc_active['stale-if-error'];
+    private function _set_options($options)
+    {
+        // RECURSIVE WARNING: _cc_mode MUST NOT be used on global configuration
+        //                    this block allow initialize defaults
+        if (isset($options['_cc_mode'])) {
+            $mode = $options['_cc_mode'];
+            $this->_set_options($this->global_conf['Cache-Control'][$mode]);
+        }
+        foreach ($this->_opts as $key => $value) {
+            if (isset($options[$value])) {
+                $this->{$key} = $options[$value];
+            }
+        }
+    }
+
+    public function set_active_urnr($urnr_group, $urnr_specific = null)
+    {
+    }
+
+    public function execute_output_ok(
+        string $base,
+        string $data,
+        int $http_status_code = 302
+    ) {
+        http_response_code($http_status_code);
+        header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
+        header("Access-Control-Allow-Origin: *");
+
+        $result = [
+            '$schema' => 'https://jsonapi.org/schema',
+            '$id' => $base,
+            '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            'data' => $data,
+            'meta' => [
+                '@type' => 'schema:Message',
+                'schema:name' => 'URN Resolver',
+                'schema:dateCreated' => date("c"),
+                // // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
+                // "schema:potentialAction" => [
+                //     "schema:name" => "uptime",
+                //     "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
+                // ]
+            ]
+          ];
+
+        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        die();
+    }
+
+    public function execute_output_404(
+        string $base,
+        // string $data,
+        int $http_status_code = 404
+    ) {
+        http_response_code($http_status_code);
+        header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
+        header("Access-Control-Allow-Origin: *");
+
+        $result = [
+            '$schema' => 'https://jsonapi.org/schema',
+            '$id' => $base,
+            '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            'error' => [
+                'status' => 404,
+                'title' => 'Not found',
+            ],
+            'meta' => [
+                '@type' => 'schema:Message',
+                'schema:dateCreated' => date("c"),
+                "schema:potentialAction" => [
+                    "schema:name" => "urn:resolver:index",
+                    "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
+                ]
+            ]
+          ];
+
+        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        die();
     }
 
     public function execute_redirect(
@@ -105,6 +191,29 @@ class Response
         // header('Location: ' . $this->active_urn_to_uri);
         header('Location: ' . $objective_iri);
         die();
+    }
+}
+
+/**
+ * Specialized class to create content for resolver itself.
+ * This is necessary since (most of the time) makes no sense redirect
+ * to external server internal data about the resolver
+ */
+class ResponseURNResolver
+{
+    public function ping()
+    {
+        $resp_data = [
+            'message' => "PONG"
+        ];
+        return $resp_data;
+    }
+
+    public function get_result(string $urnresolver_urn)
+    {
+        if ($urnresolver_urn === 'urn:resolver:ping') {
+            return $this->ping();
+        }
     }
 }
 
@@ -294,23 +403,28 @@ class Router
     public function execute_welcome()
     {
         if (!$this->_is_home && $this->_is_error) {
-            http_response_code(404);
-            header("Content-type: application/json; charset=utf-8");
-            header("Access-Control-Allow-Origin: *");
-            header('Cache-Control: public, max-age=900, s-maxage=900, stale-while-revalidate=120');
+            $mode = 'internal';
+            $resp = new Response($this->config, $mode);
+            $resp->execute_output_404($this->active_base);
+            die;
 
-            $result = (object) [
-                '$schema' => 'https://jsonapi.org/schema',
-                '$id' => $this->active_base,
-                '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
-                'error' => [
-                    'status' => 404,
-                    'title' => 'Not found',
-                    ],
-              ];
+            // http_response_code(404);
+            // header("Content-type: application/json; charset=utf-8");
+            // header("Access-Control-Allow-Origin: *");
+            // header('Cache-Control: public, max-age=900, s-maxage=900, stale-while-revalidate=120');
 
-            echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-            die();
+            // $result = [
+            //     '$schema' => 'https://jsonapi.org/schema',
+            //     '$id' => $this->active_base,
+            //     '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            //     'error' => [
+            //         'status' => 404,
+            //         'title' => 'Not found',
+            //         ],
+            //   ];
+
+            // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            // die();
         }
 
         header("Content-type: application/json; charset=utf-8");
@@ -325,19 +439,19 @@ class Router
             $resolver_paths[$key] = $path;
         }
 
-        $result = (object) [
+        $result = [
             '$schema' => 'https://jsonapi.org/schema',
             '$id' => $this->active_base . $this->active_uri,
             '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
             'data' => [
                 'resolvers' => $resolver_paths,
                 ],
-            'meta' => (object) [
+            'meta' => [
                 '@type' => 'schema:Message',
                 'schema:name' => 'URN Resolver',
                 'schema:dateCreated' => date("c"),
                 // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
-                "schema:potentialAction" => (object) [
+                "schema:potentialAction" => [
                     "schema:name" => "uptime",
                     "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
                 ]

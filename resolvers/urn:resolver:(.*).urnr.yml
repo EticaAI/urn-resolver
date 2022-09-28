@@ -7,11 +7,13 @@
 # https://stats.uptimerobot.com/jYDZlFY8jq
 
 _meta:
+  Cache-Control:
+    _cc_mode: internal
   spec:
     - https://github.com/EticaAI/urn-resolver
   examples:
     - in.urn: urn:resolver:ping
-      out.[0].iri: "{{ urnresolver }}/_/resolver/ping.php?{{ unixtime }}"
+      out.[0].iri: "{{ urnresolver }}/_/resolver/ping.php"
     # - in.urn: urn:resolver:ping
     #   out.iri: "{{ urnresolver_base.self }}/_/resolver/ping.php"
       # out.iri: "{{ base_iri }}/_/resolver/ping.php"
