@@ -261,6 +261,9 @@ class ResponseURNResolver
     // @TODO - https://github.com/json-api/json-api/pull/1611
     //       - https://www.simonthiboutot.com/jsonapi-browser/#/
 
+    // - https://github.com/json-api/json-api/blob/5916f19833847df8fb05fdd42641bd4b111be178/_schemas/1.1/schema_create_resource.json
+    // - https://github.com/json-api/json-api/pull/1603
+
     public function __construct(Router $router, string $urn)
     {
         $this->router = $router;
@@ -574,9 +577,9 @@ class Router
             // die();
         }
 
-        header("Content-type: application/json; charset=utf-8");
-        // header("Access-Control-Allow-Origin: *");
+        // header("Content-type: application/json; charset=utf-8");
         header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
+        header('Content-Type: application/vnd.api+json; charset=utf-8');
 
         $resolver_paths = [];
         foreach ($this->resolvers as $key => $value) {
@@ -590,19 +593,43 @@ class Router
             '$schema' => 'https://jsonapi.org/schema',
             '$id' => $this->active_base . $this->active_uri,
             '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            '@type' => 'schema:Action',
+            'schema:endTime' => date("c"),
             'data' => [
-                'resolvers' => $resolver_paths,
+                'type' => "schema:Action",
+                'id' => $this->config->base_iri,
+                'relationships' => [
+                    'urn:resolver:index' => [
+                        'links' => [
+                            'self' => "{$this->config->base_iri}/urn:resolver:index"
+                        ]
+                    ],
+                    'urn:resolver:_explore' => [
+                        'links' => [
+                            'self' => "{$this->config->base_iri}/urn:resolver:_explore"
+                        ]
+                    ],
+                    'urn:resolver:ping' => [
+                        'links' => [
+                            'self' => "{$this->config->base_iri}/urn:resolver:ping"
+                        ]
+                    ]
                 ],
-            'meta' => [
-                '@type' => 'schema:Message',
-                'schema:name' => 'URN Resolver',
-                'schema:dateCreated' => date("c"),
-                // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
-                "schema:potentialAction" => [
-                    "schema:name" => "uptime",
-                    "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
-                ]
-            ]
+                'resolvers' => $resolver_paths,
+            ],
+            // 'links' => [
+            //     'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq'
+            // ],
+            // 'meta' => [
+            //     '@type' => 'schema:Message',
+            //     'schema:name' => 'URN Resolver',
+            //     'schema:dateCreated' => date("c"),
+            //     // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
+            //     "schema:potentialAction" => [
+            //         "schema:name" => "uptime",
+            //         "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
+            //     ]
+            // ]
           ];
 
         http_response_code(200);
