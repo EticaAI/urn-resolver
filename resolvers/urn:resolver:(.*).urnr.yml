@@ -25,9 +25,11 @@ rules:
   - in:
       urn: "urn:resolver:ping"
     out:
-      - iri: "{{ urnresolver_base.self }}/_/resolver/pong.php"
+      # - iri: "{{ urnresolver_base.self }}/_/resolver/pong.php"
+      - iri: "{{ urnresolver }}/_/resolver/pong.php"
 
   - in:
       urn: "urn:resolver:cron:run"
     out:
-      - iri: "{{ urnresolver_base.self }}/_/resolver/cron.php"
+      # - iri: "{{ urnresolver_base.self }}/_/resolver/cron.php"
+      - iri: "{{ urnresolver }}/_/resolver/cron.php"

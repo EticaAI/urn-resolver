@@ -4,17 +4,24 @@
   "resolver_status_pages": ["https://stats.uptimerobot.com/z6Y43IGQkL"],
   "Cache-Control": {
     "default": {
-      "Cache-Control": "public",
+      "_cc_prefix": "public",
       "max-age": 3600,
       "s-maxage": 600,
       "stale-while-revalidate": 600,
       "stale-if-error": 600
     },
     "critical": {
-      "Cache-Control": "public",
+      "_cc_prefix": "public",
       "max-age": 30,
       "s-maxage": 30,
       "stale-while-revalidate": 10,
+      "stale-if-error": 10
+    },
+    "internal": {
+      "_cc_prefix": "public",
+      "max-age": 0,
+      "s-maxage": 900,
+      "stale-while-revalidate": 0,
       "stale-if-error": 10
     }
   }

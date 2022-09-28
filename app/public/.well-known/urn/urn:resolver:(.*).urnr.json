@@ -27,7 +27,7 @@
       },
       "out": [
         {
-          "iri": "{{ urnresolver_base.self }}/_/resolver/pong.php"
+          "iri": "{{ urnresolver }}/_/resolver/pong.php"
         }
       ]
     },
@@ -37,7 +37,7 @@
       },
       "out": [
         {
-          "iri": "{{ urnresolver_base.self }}/_/resolver/cron.php"
+          "iri": "{{ urnresolver }}/_/resolver/cron.php"
         }
       ]
     }

@@ -30,6 +30,7 @@ function debug()
 
 class Config
 {
+    public $global_conf;
     public string $base_iri;
     public array $resolver_status_pages;
 
@@ -37,7 +38,10 @@ class Config
     {
         $source_config = ROOT_PATH . '/urnresolver.dist.conf.json';
         $conf = json_decode(file_get_contents($source_config), true);
-        if (\file_exists(ROOT_PATH . '/urnresolver.conf.json')) {
+
+        if (php_sapi_name() == 'cli-server') {
+            // @TODO potential confs if running local devel test server
+        } elseif (\file_exists(ROOT_PATH . '/urnresolver.conf.json')) {
             $source_config2 = ROOT_PATH . '/urnresolver.conf.json';
             $conf2 = json_decode(file_get_contents($source_config2), true);
             $conf = array_replace_recursive($conf, $conf2);
@@ -48,25 +52,54 @@ class Config
         // var_dump($conf);
         // die($conf);
 
+        $this->global_conf = $conf;
         $this->base_iri = $conf['base_iri'] ?? null;
         $this->resolver_status_pages = $conf['resolver_status_pages'] ?? null;
         // $this->aaa = $conf->aaa ?? null;
+    }
+
+    public function transform_if_necessary(string $variable)
+    {
+        if (strpos('{{ ', $variable) === -1) {
+            return $variable;
+        }
+
+        $variable = str_replace('{{ urnresolver }}', $this->global_conf['base_iri'], $variable);
+
+        // @TODO implement dot notation
+        // $all_options = [];
+
+        return $variable;
     }
 }
 
 class Response
 {
-    public function __construct(Config $config)
+    private string $_cc_prefix = 'public';
+    private int $max_age = 0;
+    private int $s_maxage = 0;
+    private int $stale_while_revalidate = 0;
+    private int $stale_if_error = 0;
+
+    public function __construct(Config $config, string $mode = 'default')
     {
-        $this->config = $config;
+        $this->config = $config->global_conf;
+        $cc_active = $this->config['Cache-Control'][$mode];
+
+        $this->_cc_prefix = $cc_active['_cc_prefix'];
+        $this->max_age = $cc_active['max-age'];
+        $this->s_maxage = $cc_active['s-maxage'];
+        $this->stale_while_revalidate = $cc_active['stale-while-revalidate'];
+        $this->stale_if_error = $cc_active['stale-if-error'];
     }
 
-    public function execute_redirect(string $objective_iri, int $http_status_code = 302)
-    {
+    public function execute_redirect(
+        string $objective_iri,
+        int $http_status_code = 302
+    ) {
         http_response_code($http_status_code);
         // @see https://developers.cloudflare.com/cache/about/cache-control/
-        // This log really needs be reviewned later
-        header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
+        header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
         // header('Vary: Accept-Encoding');
         header("Access-Control-Allow-Origin: *");
         // header('Location: ' . $this->active_urn_to_uri);
@@ -235,9 +268,16 @@ class Router
 
     public function execute()
     {
-        $resp = new Response($this->config);
-
-        $resp->execute_redirect($this->active_urn_to_uri, $this->active_urn_to_httpstatus);
+        // echo strpos($this->active_urn, 'urn:resolver:') ;
+        // die($this->active_urn);
+        // $mode = 'default';
+        if (strpos($this->active_urn, 'urn:resolver:') === 0) {
+            $mode = 'internal';
+        }
+        // die($mode);
+        $resp = new Response($this->config, $mode);
+        $target = $this->config->transform_if_necessary($this->active_urn_to_uri);
+        $resp->execute_redirect($target, $this->active_urn_to_httpstatus);
         die();
 
         http_response_code($this->active_urn_to_httpstatus);
