@@ -33,8 +33,10 @@
       $router->execute_welcome();
       header("Content-type: application/json; charset=utf-8");
       header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
+      // header("Access-Control-Allow-Origin: *");
       echo json_encode($result, JSON_PRETTY_PRINT);
     }
+    die;
   }
   // catch (\Throwable $t) {
   catch (Error $e) {
@@ -42,10 +44,18 @@
     $data = [
       'error' => [
         'status' => 500,
-        'title' => 'Internal server error'
+        'title' => 'Internal Server error',
+        '_context' => [
+          $e->getMessage(),
+          $e->getFile(),
+          $e->getLine()
+        ]
       ]
     ];
     // echo $t->getMessage(), " at ", $t->getFile(), ":", $t->getLine(), "\n";
+    http_response_code(500);
+      // header('Content-Type: application/json; charset=utf-8');
+      header('Content-Type: application/vnd.api+json; charset=utf-8');
     echo json_encode( $data, JSON_PRETTY_PRINT);
     die;
   }

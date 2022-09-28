@@ -118,14 +118,16 @@ class Response
     {
     }
 
-    public function execute_output_ok(
+    public function execute_output_2xx(
         string $base,
-        string $data,
-        int $http_status_code = 302
+        array $data,
+        int $http_status_code = 200
     ) {
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
-        header("Access-Control-Allow-Origin: *");
+        // header('Content-Type: application/json; charset=utf-8');
+        header('Content-Type: application/vnd.api+json; charset=utf-8');
+        // header("Access-Control-Allow-Origin: *");
 
         $result = [
             '$schema' => 'https://jsonapi.org/schema',
@@ -148,32 +150,77 @@ class Response
         die();
     }
 
-    public function execute_output_404(
+    public function execute_output_4xx(
         string $base,
         // string $data,
-        int $http_status_code = 404
+        int $http_status_code = 404,
+        string $http_status_msg = 'Not found'
     ) {
         $this->_set_options($this->global_conf['Cache-Control']['default404']);
 
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
-        header("Access-Control-Allow-Origin: *");
+        // header('Content-Type: application/json; charset=utf-8');
+        header('Content-Type: application/vnd.api+json; charset=utf-8');
+        // header("Access-Control-Allow-Origin: *");
 
         $result = [
             '$schema' => 'https://jsonapi.org/schema',
             '$id' => $base,
             '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
             'error' => [
-                'status' => 404,
-                'title' => 'Not found',
+                'status' => $http_status_code,
+                'title' => $http_status_msg,
             ],
             'meta' => [
                 '@type' => 'schema:Message',
                 'schema:dateCreated' => date("c"),
-                "schema:potentialAction" => [
+                "schema:potentialAction" => [[
                     "schema:name" => "urn:resolver:index",
                     "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
-                ]
+                ]]
+            ]
+          ];
+
+        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        die();
+    }
+
+    public function execute_output_5xx(
+        string $base,
+        // string $data,
+        int $http_status_code = 501,
+        // string $http_status_msg = 'Internal Server Error',
+        string $http_status_msg = 'Not Implemented',
+        string $mode = null
+    ) {
+        $mode = $mode ?? "default{$http_status_code}";
+        $this->_set_options($this->global_conf['Cache-Control'][$mode]);
+
+        http_response_code($http_status_code);
+        header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
+        // header('Content-Type: application/json; charset=utf-8');
+        header('Content-Type: application/vnd.api+json; charset=utf-8');
+        // header("Access-Control-Allow-Origin: *");
+
+        $result = [
+            '$schema' => 'https://jsonapi.org/schema',
+            '$id' => $base,
+            '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            'error' => [
+                'status' => $http_status_code,
+                'title' => $http_status_msg,
+            ],
+            'meta' => [
+                '@type' => 'schema:Message',
+                'schema:dateCreated' => date("c"),
+                "schema:potentialAction" => [[
+                    "schema:name" => "uptime",
+                    "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
+                ],[
+                    "schema:name" => "urn:resolver:index",
+                    "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
+                ]]
             ]
           ];
 
@@ -189,7 +236,7 @@ class Response
         // @see https://developers.cloudflare.com/cache/about/cache-control/
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
         // header('Vary: Accept-Encoding');
-        header("Access-Control-Allow-Origin: *");
+        // header("Access-Control-Allow-Origin: *");
         // header('Location: ' . $this->active_urn_to_uri);
         header('Location: ' . $objective_iri);
         die();
@@ -205,21 +252,40 @@ class ResponseURNResolver
 {
     public int $http_status = 200;
     public string $urn;
+    public Router $router;
     public $data;
     public $errors;
 
+    // @TODO create shortcuts such as
+    //       https://json-ld.org/playground/#json-ld=https://urn.etica.ai/urn:resolver:index
+    // @TODO - https://github.com/json-api/json-api/pull/1611
+    //       - https://www.simonthiboutot.com/jsonapi-browser/#/
 
-    public function __construct($urn)
+    public function __construct(Router $router, string $urn)
     {
+        $this->router = $router;
         $this->urn = $urn;
     }
 
-
     public function execute()
     {
-        if ($urnresolver_urn === 'urn:resolver:ping') {
+        if ($this->urn === 'urn:resolver:ping') {
             return $this->operation_ping();
         }
+
+        if ($this->urn === 'urn:resolver:index') {
+            return $this->operation_index();
+        }
+
+        if ($this->urn === 'urn:resolver:help') {
+            // @TODO
+            // return $this->operation_index();
+        }
+
+        if (strpos($this->urn, 'urn:resolver:_explore') === 0) {
+            return $this->operation_explore();
+        }
+
         $this->http_status = 501; // 501 Not Implemented
         $errors = [
             'status' => 501,
@@ -230,7 +296,37 @@ class ResponseURNResolver
 
     public function is_success()
     {
-        return empty($this->errors);
+        return empty($this->errors) && $this->http_status < 500;
+    }
+
+    public function operation_explore()
+    {
+        $resolver_paths = [];
+
+        $this->data = [
+            'json-ld' => "https://json-ld.org/playground/#json-ld={$this->router->config->base_iri}/{$this->urn}",
+            'openapi' => "https://editor.swagger.io/?url=https://raw.githubusercontent.com/EticaAI/urn-resolver/main/openapi.yml",
+        ];
+
+        return true;
+        // return $this->is_success();
+    }
+
+    public function operation_index()
+    {
+        $resolver_paths = [];
+        foreach ($this->router->resolvers as $key => $value) {
+            $parts = explode('/.well-known/urn/', $value);
+            array_shift($parts);
+            $path = '/.well-known/urn/' . $parts[0];
+            $resolver_paths[$key] = $path;
+        }
+
+        $this->data = [
+            'resolvers' => $resolver_paths,
+        ];
+        return true;
+        // return $this->is_success();
     }
 
     public function operation_ping()
@@ -238,14 +334,15 @@ class ResponseURNResolver
         $this->data = [
             'message' => "PONG"
         ];
-        return $this->is_success();
+        return true;
+        // return $this->is_success();
     }
 }
 
 class Router
 {
-    private Config $config;
-    private array $resolvers = array();
+    public Config $config;
+    public array $resolvers = array();
     private $active_base;
     private $active_uri;
     private $active_urn = false;
@@ -422,12 +519,16 @@ class Router
         // die($this->active_urn);
         // $mode = 'default';
         if (strpos($this->active_urn, 'urn:resolver:') === 0) {
-            $urnr = new ResponseURNResolver($this->active_urn);
+            $urnr = new ResponseURNResolver($this, $this->active_urn);
             if ($urnr->execute()) {
                 $data = $urnr->data;
+                $resp = new Response($this->config);
+                $resp->execute_output_2xx($this->active_uri, $data);
+            } else {
+                $resp = new Response($this->config);
+                $resp->execute_output_5xx($this->active_uri);
             }
-            $mode = 'internal';
-            $resp = new Response($this->config, $mode);
+            die;
         }
         // die($mode);
         $resp = new Response($this->config, $mode);
@@ -440,7 +541,7 @@ class Router
         // This log really needs be reviewned later
         header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
         // header('Vary: Accept-Encoding');
-        header("Access-Control-Allow-Origin: *");
+        // header("Access-Control-Allow-Origin: *");
         header('Location: ' . $this->active_urn_to_uri);
         die();
         // header("HTTP/1.1 301 Moved Permanently");
@@ -451,7 +552,7 @@ class Router
         if (!$this->_is_home && $this->_is_error) {
             $mode = 'internal';
             $resp = new Response($this->config, $mode);
-            $resp->execute_output_404($this->active_base);
+            $resp->execute_output_4xx($this->active_base, 404);
             die;
 
             // http_response_code(404);
@@ -474,7 +575,7 @@ class Router
         }
 
         header("Content-type: application/json; charset=utf-8");
-        header("Access-Control-Allow-Origin: *");
+        // header("Access-Control-Allow-Origin: *");
         header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
 
         $resolver_paths = [];
@@ -512,6 +613,11 @@ class Router
 
     public function is_success()
     {
+        // if (!empty($this->_internal)){
+        if (!empty($this->active_urn) && strpos($this->active_urn, 'urn:resolver:') === 0) {
+            return true;
+        }
+
         return isset($this->active_urn_to_uri) and !empty($this->active_urn_to_uri);
     }
 }

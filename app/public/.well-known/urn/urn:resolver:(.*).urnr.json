@@ -1,36 +1,42 @@
 {
   "_meta": {
+    "_internal": true,
     "Cache-Control": {
       "_cc_mode": "internal"
     },
-    "spec": [
-      "https://github.com/EticaAI/urn-resolver"
-    ],
     "examples": [
       {
-        "in.urn": "urn:resolver:ping",
-        "out.[0].iri": "{{ urnresolver }}/_/resolver/ping.php"
+        "in.urn": "urn:resolver:ping"
+      },
+      {
+        "in.urn": "urn:resolver:index"
+      },
+      {
+        "in.urn": "urn:resolver:help"
+      },
+      {
+        "in.urn": "urn:resolver:_explore"
       }
+    ],
+    "spec": [
+      "https://github.com/EticaAI/urn-resolver"
     ]
   },
   "rules": [
     {
       "in": {
         "urn": "urn:resolver:(.*)"
-      },
-      "internal": true
+      }
     },
     {
       "in": {
         "urn": "urn:resolver:ping"
-      },
-      "internal": true
+      }
     },
     {
       "in": {
         "urn": "urn:resolver:cron:run"
-      },
-      "internal": true
+      }
     }
   ]
 }
