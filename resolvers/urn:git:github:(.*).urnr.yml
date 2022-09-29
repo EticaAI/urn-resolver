@@ -1,4 +1,5 @@
 $schema: urn:resolver:schema:urnr
+'@id': urn:git:github
 meta:
   spec:
     - https://docs.github.com/rest

@@ -6,6 +6,7 @@
 
 # https://stats.uptimerobot.com/jYDZlFY8jq
 $schema: urn:resolver:schema:urnr
+'@id': urn:resolver
 meta:
   _internal: true
   Cache-Control:
@@ -16,6 +17,7 @@ meta:
     - in.urn: urn:resolver:index
     - in.urn: urn:resolver:help
     - in.urn: urn:resolver:_explore
+    - in.urn: urn:resolver:_summary
 
     # - in.urn: urn:resolver:ping
     #   # out.[0].iri: "{{ urnresolver }}/_/resolver/ping.php"

@@ -1,4 +1,5 @@
 $schema: urn:resolver:schema:urnr
+'@id': urn:nato
 meta:
   _comment: >
     See RFC 7467. Both <http://nso.nato.int/nso/nsdd/listpromulg.html> and

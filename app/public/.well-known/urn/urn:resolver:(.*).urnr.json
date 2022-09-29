@@ -1,5 +1,6 @@
 {
   "$schema": "urn:resolver:schema:urnr",
+  "@id": "urn:resolver",
   "meta": {
     "_internal": true,
     "Cache-Control": {
@@ -17,6 +18,9 @@
       },
       {
         "in.urn": "urn:resolver:_explore"
+      },
+      {
+        "in.urn": "urn:resolver:_summary"
       }
     ],
     "spec": [

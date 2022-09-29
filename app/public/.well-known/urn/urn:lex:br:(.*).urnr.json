@@ -1,5 +1,6 @@
 {
   "$schema": "urn:resolver:schema:urnr",
+  "@id": "urn:lex:br",
   "meta": {
     "spec": [
       "https://en.wikipedia.org/wiki/LexML"

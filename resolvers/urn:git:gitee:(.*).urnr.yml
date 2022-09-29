@@ -1,4 +1,5 @@
 $schema: urn:resolver:schema:urnr
+'@id': urn:git:gitee
 meta:
   spec:
     - https://gitee.com/api/v5/swagger

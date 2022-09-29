@@ -1,4 +1,5 @@
 $schema: urn:resolver:schema:urnr
+'@id': urn:geo
 meta:
   spec:
     - https://www.rfc-editor.org/rfc/rfc5870

@@ -1,5 +1,6 @@
 {
   "$schema": "urn:resolver:schema:urnr",
+  "@id": "urn:ietf",
   "meta": {
     "_note": "this resolver rule is an early working draft",
     "spec": "https://datatracker.ietf.org/doc/html/rfc2648",

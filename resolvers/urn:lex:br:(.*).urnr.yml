@@ -2,6 +2,7 @@
 # @see https://projeto.lexml.gov.br/documentacao/destaques-lexml#nomes-persistentes
 # full example: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
 $schema: urn:resolver:schema:urnr
+'@id': urn:lex:br
 meta:
   spec:
     - https://en.wikipedia.org/wiki/LexML

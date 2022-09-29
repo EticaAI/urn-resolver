@@ -1,5 +1,6 @@
 {
   "$schema": "urn:resolver:schema:urnr",
+  "@id": "urn:nato",
   "meta": {
     "_comment": "See RFC 7467. Both <http://nso.nato.int/nso/nsdd/listpromulg.html> and <https://nhqc3s.hq.nato.int/Default.aspx> are public, so at least some sort of which standards exist (but contents are not public).\n",
     "spec": [

@@ -308,6 +308,66 @@ class ResponseURNResolver
         $this->urn = $urn;
     }
 
+    private function _get_urnr_values(array $filters = null)
+    {
+        $examples = [];
+        $resolver_ops = new \stdClass();
+
+        foreach (glob(RESOLVER_RULE_PATH . "/*.urnr.json") as $filepath) {
+            $filename = str_replace(RESOLVER_RULE_PATH, '', $filepath);
+            $filename = ltrim($filename, '/');
+            // $urn_prefix = str_replace('.urnr.yml', '', $filename) . ':';
+            $urn_pattern = str_replace('.urnr.json', '', $filename);
+            $json = file_get_contents($filepath);
+
+            $json_data = json_decode($json, false);
+
+            if (isset($json_data->{'@id'}) && $json_data->{'@id'} === 'urn:resolver') {
+                // if (isset($json_data->{'@id'})){
+                // var_dump($json_data->meta); die;
+                foreach ($json_data->meta->examples as $key => $value) {
+                    $resexemp = array_values((array) $value)[0];
+                    // var_dump($value, $resexemp);
+                    // die($json_data->meta->examples);
+                    $resolver_ops->{$resexemp} = URNRESOLVER_BASE . '/' . $resexemp;
+                }
+            }
+
+            if (isset($json_data->meta) && isset($json_data->meta->examples)) {
+                foreach ($json_data->meta->examples as $key => $value) {
+                    array_push($examples, $value->{'in.urn'});
+                    // Only get the first example
+                    break;
+                }
+            }
+        }
+
+        usort($examples, function ($a, $b) {
+            return strlen($b) <=> strlen($a);
+        });
+
+        $examples2 = new \stdClass();
+        foreach ($examples as $key => $value) {
+            // var_dump($result->examples);
+
+            // $result->examples[$value] = URNRESOLVER_BASE . '/' . $value;
+            // array_push($examples2, [$value => URNRESOLVER_BASE . '/' . $value]);
+            $examples2->{$value} = URNRESOLVER_BASE . '/' . $value;
+            // var_dump($result->examples);
+            // die('aa');
+        }
+
+        // var_dump($examples2);
+        // var_dump($examples);
+        // var_dump($result->examples);
+        // die;
+
+        return (object) [
+            'examples_all' => $examples2,
+            'resolver_ops' => $resolver_ops
+        ];
+    }
+
     public function execute()
     {
         if ($this->urn === 'urn:resolver:ping') {
@@ -325,6 +385,10 @@ class ResponseURNResolver
 
         if (strpos($this->urn, 'urn:resolver:_explore') === 0) {
             return $this->operation_explore();
+        }
+
+        if (strpos($this->urn, 'urn:resolver:_summary') === 0) {
+            return $this->operation_summary();
         }
 
         $this->http_status = 501; // 501 Not Implemented
@@ -348,6 +412,16 @@ class ResponseURNResolver
             'json-ld' => "https://json-ld.org/playground/#json-ld={$this->router->config->base_iri}/{$this->urn}",
             'openapi' => "https://editor.swagger.io/?url=https://raw.githubusercontent.com/EticaAI/urn-resolver/main/openapi.yml",
         ];
+
+        return true;
+        // return $this->is_success();
+    }
+
+    public function operation_summary()
+    {
+        $summary = $this->_get_urnr_values();
+
+        $this->data = (array) $summary;
 
         return true;
         // return $this->is_success();
@@ -584,24 +658,6 @@ class Router
             $resp = new Response($this->config, $mode);
             $resp->execute_output_4xx($this->active_base, 404);
             die;
-
-            // http_response_code(404);
-            // header("Content-type: application/json; charset=utf-8");
-            // header("Access-Control-Allow-Origin: *");
-            // header('Cache-Control: public, max-age=900, s-maxage=900, stale-while-revalidate=120');
-
-            // $result = [
-            //     '$schema' => 'https://jsonapi.org/schema',
-            //     '$id' => $this->active_base,
-            //     '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
-            //     'error' => [
-            //         'status' => 404,
-            //         'title' => 'Not found',
-            //         ],
-            //   ];
-
-            // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-            // die();
         }
 
         header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
