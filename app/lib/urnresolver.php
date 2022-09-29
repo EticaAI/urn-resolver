@@ -126,7 +126,7 @@ class Response
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
         // header('Content-Type: application/json; charset=utf-8');
-        header('Content-Type: application/vnd.api+json; charset=utf-8');
+        header("Content-type: application/json; charset=utf-8");
         // header("Access-Control-Allow-Origin: *");
 
         $result = [
@@ -161,7 +161,7 @@ class Response
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
         // header('Content-Type: application/json; charset=utf-8');
-        header('Content-Type: application/vnd.api+json; charset=utf-8');
+        header("Content-type: application/json; charset=utf-8");
         // header("Access-Control-Allow-Origin: *");
 
         $result = [
@@ -200,7 +200,7 @@ class Response
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
         // header('Content-Type: application/json; charset=utf-8');
-        header('Content-Type: application/vnd.api+json; charset=utf-8');
+        header("Content-type: application/json; charset=utf-8");
         // header("Access-Control-Allow-Origin: *");
 
         $result = [
@@ -577,9 +577,8 @@ class Router
             // die();
         }
 
-        // header("Content-type: application/json; charset=utf-8");
         header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
-        header('Content-Type: application/vnd.api+json; charset=utf-8');
+        header("Content-type: application/json; charset=utf-8");
 
         $resolver_paths = [];
         foreach ($this->resolvers as $key => $value) {

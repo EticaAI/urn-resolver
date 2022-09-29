@@ -54,8 +54,7 @@
     ];
     // echo $t->getMessage(), " at ", $t->getFile(), ":", $t->getLine(), "\n";
     http_response_code(500);
-      // header('Content-Type: application/json; charset=utf-8');
-    header('Content-Type: application/vnd.api+json; charset=utf-8');
+    header("Content-type: application/json; charset=utf-8");
     echo json_encode( $data, JSON_PRETTY_PRINT);
     die;
   }

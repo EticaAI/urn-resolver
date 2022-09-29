@@ -1,0 +1,27 @@
+{
+  "$schema": "/workspace/git/EticaAI/urn-resolver/app/public/meta/urnresolver.schema.json",
+  "@context": "/workspace/git/EticaAI/urn-resolver/app/public/meta/urnresolver.context.jsonld",
+  "@type": "schema:Action",
+  "schema:endTime": "2022-09-29T14:17:37+00:00",
+  "data": {
+    "type": "schema:Action",
+    "id": "https://urn.etica.ai",
+    "relationships": {
+      "vurn:resolver:index": {
+        "links": {
+          "self": "https://urn.etica.ai/urn:resolver:index"
+        }
+      },
+      "vurn:resolver:_explore": {
+        "links": {
+          "self": "https://urn.etica.ai/urn:resolver:_explore"
+        }
+      },
+      "vurn:resolver:ping": {
+        "links": {
+          "self": "https://urn.etica.ai/urn:resolver:ping"
+        }
+      }
+    }
+  }
+}
