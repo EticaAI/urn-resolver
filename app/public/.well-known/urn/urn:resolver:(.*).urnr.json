@@ -1,5 +1,6 @@
 {
-  "_meta": {
+  "$schema": "urn:resolver:schema:urnr",
+  "meta": {
     "_internal": true,
     "Cache-Control": {
       "_cc_mode": "internal"

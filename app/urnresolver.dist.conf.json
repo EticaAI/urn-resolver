@@ -2,6 +2,13 @@
   "//comment": "Rename urnresolver.dist.conf.json to urnresolver.conf.json",
   "base_iri": "http://localhost:8000",
   "resolver_status_pages": ["https://stats.uptimerobot.com/z6Y43IGQkL"],
+  "caching-groups": {
+    "//@TODO": "implement groups like this mode",
+    "default": {
+      "Cache-Control": {},
+      "Surrogate-Control": {}
+    }
+  },
   "Cache-Control": {
     "default": {
       "_cc_prefix": "public",

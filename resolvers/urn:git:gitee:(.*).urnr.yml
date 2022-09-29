@@ -1,4 +1,5 @@
-_meta:
+$schema: urn:resolver:schema:urnr
+meta:
   spec:
     - https://gitee.com/api/v5/swagger
   examples:

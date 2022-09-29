@@ -1,5 +1,6 @@
 {
-  "_meta": {
+  "$schema": "urn:resolver:schema:urnr",
+  "meta": {
     "spec": [
       "https://www.rfc-editor.org/rfc/rfc5870",
       "https://en.wikipedia.org/wiki/Geo_URI_scheme",

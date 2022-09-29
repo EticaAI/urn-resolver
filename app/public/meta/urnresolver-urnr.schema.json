@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resolver:schema:urnr",
+  "title": "URN Resolver JSON Schema",
+  "description": "Early draft. See https://github.com/EticaAI/urn-resolver/issues/2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$id": {
+      "type": "string"
+    },
+    "$schema": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "array"
+    },
+    "meta": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "rules"
+  ]
+}

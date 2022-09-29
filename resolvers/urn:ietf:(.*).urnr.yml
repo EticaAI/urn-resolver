@@ -6,8 +6,8 @@
 # urn:ietf:id:ietf-urn-ietf-06
 # urn:ietf:mtg:41-urn
 # urn:ietf:bcp:47
-
-_meta:
+$schema: urn:resolver:schema:urnr
+meta:
   _note: this resolver rule is an early working draft
   spec: https://datatracker.ietf.org/doc/html/rfc2648
   examples:

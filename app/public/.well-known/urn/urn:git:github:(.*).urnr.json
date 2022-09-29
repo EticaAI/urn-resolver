@@ -1,5 +1,6 @@
 {
-  "_meta": {
+  "$schema": "urn:resolver:schema:urnr",
+  "meta": {
     "spec": [
       "https://docs.github.com/rest"
     ],

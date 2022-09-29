@@ -1,4 +1,5 @@
-_meta:
+$schema: urn:resolver:schema:urnr
+meta:
   spec:
     - https://en.wikipedia.org/wiki/Persistent_uniform_resource_locator
   examples:

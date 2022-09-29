@@ -1,7 +1,8 @@
 # @see https://pt.wikipedia.org/wiki/Lex_(URN)
 # @see https://projeto.lexml.gov.br/documentacao/destaques-lexml#nomes-persistentes
 # full example: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
-_meta:
+$schema: urn:resolver:schema:urnr
+meta:
   spec:
     - https://en.wikipedia.org/wiki/LexML
     # - https://en.wikipedia.org/wiki/EUR-Lex

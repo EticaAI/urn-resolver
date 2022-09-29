@@ -5,8 +5,8 @@
 # urn_resolver_internal: true
 
 # https://stats.uptimerobot.com/jYDZlFY8jq
-
-_meta:
+$schema: urn:resolver:schema:urnr
+meta:
   _internal: true
   Cache-Control:
     _cc_mode: internal

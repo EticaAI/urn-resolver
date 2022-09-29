@@ -520,7 +520,7 @@ class Router
     {
         // echo strpos($this->active_urn, 'urn:resolver:') ;
         // die($this->active_urn);
-        // $mode = 'default';
+        $mode = 'default';
         if (strpos($this->active_urn, 'urn:resolver:') === 0) {
             $urnr = new ResponseURNResolver($this, $this->active_urn);
             if ($urnr->execute()) {
@@ -531,23 +531,12 @@ class Router
                 $resp = new Response($this->config);
                 $resp->execute_output_5xx($this->active_uri);
             }
-            die;
+        } else {
+            // die($mode);
+            $resp = new Response($this->config, $mode);
+            $target = $this->config->transform_if_necessary($this->active_urn_to_uri);
+            $resp->execute_redirect($target, $this->active_urn_to_httpstatus);
         }
-        // die($mode);
-        $resp = new Response($this->config, $mode);
-        $target = $this->config->transform_if_necessary($this->active_urn_to_uri);
-        $resp->execute_redirect($target, $this->active_urn_to_httpstatus);
-        die();
-
-        http_response_code($this->active_urn_to_httpstatus);
-        // @see https://developers.cloudflare.com/cache/about/cache-control/
-        // This log really needs be reviewned later
-        header('Cache-Control: public, max-age=3600, s-maxage=600, stale-while-revalidate=600, stale-if-error=600');
-        // header('Vary: Accept-Encoding');
-        // header("Access-Control-Allow-Origin: *");
-        header('Location: ' . $this->active_urn_to_uri);
-        die();
-        // header("HTTP/1.1 301 Moved Permanently");
     }
 
     public function execute_welcome()
