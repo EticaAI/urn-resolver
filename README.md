@@ -289,6 +289,12 @@ Check [resolvers](resolvers/) folder.
 - https://json-ld.org/playground/
   - https://json-ld.org/spec/latest/json-ld/#nested-properties
 - https://www.jsonschemavalidator.net/
+
+### Logos
+- https://github.com/json-api/json-api/issues/1655
+- https://json-ld.org/images/
+- https://www.w3.org/RDF/icons/
+- https://www.hydra-cg.com/spec/latest/core/ (maybe)
 -->
 
 ## License

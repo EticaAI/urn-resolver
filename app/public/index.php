@@ -55,7 +55,7 @@
     // echo $t->getMessage(), " at ", $t->getFile(), ":", $t->getLine(), "\n";
     http_response_code(500);
     header("Content-type: application/json; charset=utf-8");
-    echo json_encode( $data, JSON_PRETTY_PRINT);
+    echo json_encode($data);
     die;
   }
 

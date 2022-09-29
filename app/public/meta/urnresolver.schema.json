@@ -1,5 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "URN Resolver JSON Schema",
-  "description": "Early draft. See https://github.com/EticaAI/urn-resolver/issues/2"
-}

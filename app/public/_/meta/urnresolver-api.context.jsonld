@@ -15,6 +15,20 @@
     "schema": "http://schema.org/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "xml": "http://www.w3.org/XML/1998/namespace",
-    "xsd": "http://www.w3.org/2001/XMLSchema#"
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "hydra": "http://www.w3.org/ns/hydra/core#",
+    "data": "@nest",
+    "error": {
+      "@id": "hydra:Error"
+    },
+    "status": {
+      "@id": "hydra:statusCode",
+      "@nest": "error"
+    },
+    "title": {
+      "@id": "hydra:Status",
+      "@nest": "error"
+    },
+    "$schema": null
   }
 }

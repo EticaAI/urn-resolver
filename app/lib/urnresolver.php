@@ -8,6 +8,10 @@ date_default_timezone_set('UTC');
 define("ROOT_PATH", dirname(dirname(__FILE__)));
 define("RESOLVER_RULE_PATH", ROOT_PATH . '/public/.well-known/urn');
 
+$global_conf = new Config();
+
+define("URNRESOLVER_BASE", $global_conf->base_iri);
+
 // https://www.php-fig.org/psr/psr-12/
 
 function debug()
@@ -26,6 +30,25 @@ function debug()
         }
     }
     return $info;
+}
+
+/**
+ * Pretty print JSON (2 spaces and newline)
+ *
+ * @param     object    $data
+ * @return    string
+ */
+function to_json($data)
+{
+    $json_string_4spaces = json_encode(
+        $data,
+        JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+    );
+    // https://stackoverflow.com/a/31689850/894546
+    $json_string = preg_replace_callback('/^ +/m', function ($m) {
+        return str_repeat(' ', strlen($m[0]) / 2);
+    }, $json_string_4spaces);
+    return $json_string . "\n";
 }
 
 class Config
@@ -130,9 +153,13 @@ class Response
         // header("Access-Control-Allow-Origin: *");
 
         $result = [
-            '$schema' => 'https://jsonapi.org/schema',
-            '$id' => $base,
-            '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            // '$schema' => 'https://jsonapi.org/schema',
+            // @TODO make this also an URN (with htaccess rewirte for performance reason)
+            '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
+            // '$id' => $base,
+            // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
+            '@id' => $base,
             'data' => $data,
             'meta' => [
                 '@type' => 'schema:Message',
@@ -146,7 +173,8 @@ class Response
             ]
           ];
 
-        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        echo to_json($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         die();
     }
 
@@ -165,9 +193,13 @@ class Response
         // header("Access-Control-Allow-Origin: *");
 
         $result = [
-            '$schema' => 'https://jsonapi.org/schema',
-            '$id' => $base,
-            '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            // '$schema' => 'https://jsonapi.org/schema',
+            // @TODO make this also an URN (with htaccess rewirte for performance reason)
+            '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
+            // '$id' => $base,
+            // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
+            '@id' => $base,
             'error' => [
                 'status' => $http_status_code,
                 'title' => $http_status_msg,
@@ -182,7 +214,8 @@ class Response
             ]
           ];
 
-        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        echo to_json($result);
         die();
     }
 
@@ -204,9 +237,13 @@ class Response
         // header("Access-Control-Allow-Origin: *");
 
         $result = [
-            '$schema' => 'https://jsonapi.org/schema',
-            '$id' => $base,
-            '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            // '$schema' => 'https://jsonapi.org/schema',
+            // @TODO make this also an URN (with htaccess rewirte for performance reason)
+            '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
+            // '$id' => $base,
+            // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
+            '@id' => $base,
             'error' => [
                 'status' => $http_status_code,
                 'title' => $http_status_msg,
@@ -224,7 +261,8 @@ class Response
             ]
           ];
 
-        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        echo to_json($result);
         die();
     }
 
@@ -578,13 +616,18 @@ class Router
         }
 
         $result = [
-            '$schema' => 'https://jsonapi.org/schema',
-            '$id' => $this->active_base . $this->active_uri,
-            '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            // '$schema' => 'https://jsonapi.org/schema',
+            // @TODO make this also an URN (with htaccess rewirte for performance reason)
+            '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
+            // '$id' => $base,
+            // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+            // '@id' => $base,
+            '@id' => URNRESOLVER_BASE, // home page, display the site URL
+            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
             '@type' => 'schema:Action',
-            'schema:endTime' => date("c"),
+            // 'schema:endTime' => date("c"),
             'data' => [
-                'type' => "schema:Action",
+                // 'type' => "schema:Action",
                 'id' => $this->config->base_iri,
                 'relationships' => [
                     'vurn:resolver:index' => [
@@ -610,21 +653,23 @@ class Router
             // 'links' => [
             //     'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq'
             // ],
-            // 'meta' => [
-            //     '@type' => 'schema:Message',
-            //     'schema:name' => 'URN Resolver',
-            //     'schema:dateCreated' => date("c"),
-            //     // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
-            //     "schema:potentialAction" => [
-            //         "schema:name" => "uptime",
-            //         "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
-            //     ]
-            // ]
+            'meta' => [
+                '@type' => 'schema:Message',
+                'schema:name' => 'URN Resolver',
+                // 'schema:dateCreated' => date("c"),
+                'schema:endTime' => date("c"),
+                // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
+                "schema:potentialAction" => [
+                    "schema:name" => "uptime",
+                    "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
+                ]
+            ]
           ];
 
         http_response_code(200);
         // $result->_debug['_router'] =  $this->meta();
-        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        echo to_json($result);
         die();
     }
 

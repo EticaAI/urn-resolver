@@ -1,13 +1,15 @@
-# URN Resolver / Meta
+# URN Resolver (app) / _ / meta
 
 ## Files
 ### urnresolver.context.jsonld
 > - [urnresolver.context.jsonld](urnresolver.context.jsonld)
+> - Ideal path to serve: `{resolver}/urn:resolver:meta:context:api`
 
 Prefixes uses https://github.com/w3c/json-ld-rc/ (https://w3c.github.io/json-ld-rc/context.jsonld) as reference
 
 ### urnresolver.schema.json
 > - [urnresolver.schema.json](urnresolver.schema.json)
+> - Ideal path to serve: `{resolver}/urn:resolver:meta:context:urnr`
 
 ## Relation to other APIs
 
