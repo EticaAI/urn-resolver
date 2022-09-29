@@ -599,23 +599,25 @@ class Router
                 'type' => "schema:Action",
                 'id' => $this->config->base_iri,
                 'relationships' => [
-                    'urn:resolver:index' => [
+                    'vurn:resolver:index' => [
                         'links' => [
                             'self' => "{$this->config->base_iri}/urn:resolver:index"
                         ]
                     ],
-                    'urn:resolver:_explore' => [
+                    'vurn:resolver:_explore' => [
                         'links' => [
                             'self' => "{$this->config->base_iri}/urn:resolver:_explore"
                         ]
                     ],
-                    'urn:resolver:ping' => [
+                    'vurn:resolver:ping' => [
                         'links' => [
                             'self' => "{$this->config->base_iri}/urn:resolver:ping"
                         ]
                     ]
                 ],
-                'resolvers' => $resolver_paths,
+                // 'resolvers' => $resolver_paths,
+                // Change this later
+                // 'attributes' => $resolver_paths,
             ],
             // 'links' => [
             //     'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq'

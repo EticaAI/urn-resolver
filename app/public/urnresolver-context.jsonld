@@ -5,10 +5,12 @@
     "id": "@id",
     "type": "@type",
     "schema": "https://schema.org/",
-    "urnvocab": "urn:",
-    "attributes": "@nest",
+    "vurn": "urn:",
     "data": "schema:object",
     "errors": "schema:error",
-    "meta": "schema:result"
+    "meta": "schema:result",
+    "__attributes": "@nest",
+    "relationships": "schema:potentialAction",
+    "__links": "schema:potentialAction"
   }
 }
