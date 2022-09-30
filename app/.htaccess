@@ -15,6 +15,8 @@ Header add Access-Control-Allow-Methods: "GET,POST,HEAD,OPTIONS,DELETE,PUT"
 
 Options +FollowSymlinks
 Options -Indexes
+# Options +Indexes
+# IndexOptions +FancyIndexing
 
 # Alias /urn:resolver:meta:context:api public/_/meta/urnresolver-api.context.jsonld
 # Alias /urn:resolver:meta:context:urnr public/_/meta/urnresolver-urnr.schema.json

@@ -1,0 +1,36 @@
+{
+  "$schema": "urn:resolver:schema:urnr",
+  "@id": "urn:data:un:ocha",
+  "meta": {
+    "_comment": "Informal URN.\n",
+    "spec": "https://cod.unocha.org/",
+    "examples": [
+      {
+        "in.urn": "urn:data:un:ocha:opendata",
+        "out.[0].iri": "https://data.humdata.org/api/action/package_list"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "in": {
+        "urn": "urn:data:un:ocha:(.*)"
+      },
+      "out": [
+        {
+          "iri": "https://data.humdata.org/"
+        }
+      ]
+    },
+    {
+      "in": {
+        "urn": "urn:data:un:ocha:opendata"
+      },
+      "out": [
+        {
+          "iri": "https://data.humdata.org/api/action/package_list"
+        }
+      ]
+    }
+  ]
+}
