@@ -3,7 +3,6 @@
   "@id": "urn:data:us:edu.uga.itos",
   "meta": {
     "_comment": "Informal URN.\n",
-    "spec": null,
     "examples": [
       {
         "in.urn": "urn:data:us:edu.uga.itos:codv2api:",

@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
+$schema: urn:resolver:schema:urnr
+"@id": urn:osm
+meta:
+  _comment: >
+    Informal URN. Namespace likely to change
+  # spec: null
+  examples:
+    - in.urn: urn:osm:_tag:amenity=hospital
+      out.[0].iri: https://wiki.openstreetmap.org/wiki/Tag:amenity=hospital
+    - in.urn: urn:osm:_relation:boundary
+      out.[0].iri: https://wiki.openstreetmap.org/wiki/Relation:boundary
+rules:
+  - in:
+      urn: "urn:osm:_features"
+    out:
+      - iri: "https://wiki.openstreetmap.org/wiki/Map_features"
+  - in:
+      urn: "urn:osm:_tags"
+    out:
+      - iri: "https://wiki.openstreetmap.org/wiki/Tags"
+  - in:
+      urn: "urn:osm:_key:(.*)"
+    out:
+      - iri: "https://wiki.openstreetmap.org/wiki/Key:{{ in[1] }}"
+  - in:
+      urn: "urn:osm:_tag:(.*)"
+    out:
+      - iri: "https://wiki.openstreetmap.org/wiki/Tag:{{ in[1] }}"
+  - in:
+      urn: "urn:osm:_relation:(.*)"
+    out:
+      - iri: "https://wiki.openstreetmap.org/wiki/Relation:{{ in[1] }}"

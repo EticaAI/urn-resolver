@@ -1,0 +1,14 @@
+{
+  "yaml.schemas": {
+    "./app/public/_/meta/urnresolver-urnr.schema.json": "*.urnr.yml"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "*.urnr.json"
+      ],
+      "url": "./app/public/_/meta/urnresolver-urnr.schema.json"
+    }
+  ],
+  "//json.schemaDownload.enable": false
+}

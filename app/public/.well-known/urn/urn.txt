@@ -1,7 +1,7 @@
 # .well-known/urn/urn.txt
 
-urn:data:un:ocha.urnr.json
-urn:data:us:edu.uga.itos.urnr.json
+urn:data:un:ocha:.urnr.json
+urn:data:us:edu.uga.itos:.urnr.json
 urn:doi:(.*).urnr.json
 urn:geo:(.*).urnr.json
 urn:git:gitee:(.*).urnr.json
@@ -10,6 +10,7 @@ urn:ietf:(.*).urnr.json
 urn:issn:(.*).urnr.json
 urn:lex:br:(.*).urnr.json
 urn:nato:(.*).urnr.json
+urn:osm:.urnr.json
 urn:purl:(.*).urnr.json
 urn:resolver:(.*).urnr.json
 urn:w3id:(.*).urnr.json
