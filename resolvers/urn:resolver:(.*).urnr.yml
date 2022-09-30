@@ -5,6 +5,7 @@
 # urn_resolver_internal: true
 
 # https://stats.uptimerobot.com/jYDZlFY8jq
+# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
 '@id': urn:resolver
 meta:

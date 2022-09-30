@@ -9,6 +9,9 @@
     "$id": {
       "type": "string"
     },
+    "@id": {
+      "type": "string"
+    },
     "$schema": {
       "type": "string"
     },
@@ -16,6 +19,9 @@
       "type": "array"
     },
     "meta": {
+      "type": "object"
+    },
+    "data": {
       "type": "object"
     }
   },

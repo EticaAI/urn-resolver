@@ -29,6 +29,8 @@ At least the top level of the API response is fully compatible with JSON API 1.0
 - https://onlineyamltools.com/convert-yaml-to-json
 - https://urn.etica.ai/meta/test-api-online.json
 - https://json-everything.net/json-schema/
+
+- https://github.com/redhat-developer/vscode-yaml
 -->
 
 

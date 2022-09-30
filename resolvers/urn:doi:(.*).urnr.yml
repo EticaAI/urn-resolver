@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
 '@id': urn:doi
 meta:
@@ -5,8 +6,8 @@ meta:
   examples:
     - in.urn: urn:doi:10.1000/182
       out.[0].iri: https://doi.org/urn:doi:10.1000/182
-data:
-  # No contextual data need here
+# data:
+#   # No contextual data need here
 rules:
   # https://regex101.com/?regex=urn:doi:(.*)
   - in:
