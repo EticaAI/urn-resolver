@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
+$schema: urn:resolver:schema:urnr
+'@id': urn:wikidata
+meta:
+  _comment: >
+    Informal URN.
+    - https://www.wikidata.org/wiki/EntitySchema:E49
+      - We're using these prefixes
+  spec: null
+  examples:
+    - in.urn:  urn:wikidata:wdata:Q155
+      out.[0].iri: http://www.wikidata.org/wiki/Special:EntityData/Q155
+    - in.urn:  urn:wikidata:wdata:Q155.ttl
+      out.[0].iri: http://www.wikidata.org/wiki/Special:EntityData/Q155.ttl
+    - in.urn:  urn:wikidata:wdata:Q155.json
+      out.[0].iri: http://localhost:8000/urn:wikidata:wdata:q155.json
+rules:
+  - in:
+      urn: "urn:wikidata:wdata:(.*)"
+    out:
+      - iri: "http://www.wikidata.org/wiki/Special:EntityData/{{ in[1] }}"
+
+# @TODO https://vocabulary.unocha.org/json/beta-v4/countries.json

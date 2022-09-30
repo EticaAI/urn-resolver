@@ -4,7 +4,7 @@
   "title": "URN Resolver JSON Schema",
   "description": "Early draft. See https://github.com/EticaAI/urn-resolver/issues/2",
   "type": "object",
-  "additionalProperties": false,
+  "unevaluatedProperties": false,
   "properties": {
     "$id": {
       "type": "string"
@@ -19,7 +19,13 @@
       "type": "array"
     },
     "meta": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "_comment": { "type": "string" },
+        "spec": { "type": "string" },
+        "examples": { "type": "array" }
+      },
+      "additionalProperties": false
     },
     "data": {
       "type": "object"

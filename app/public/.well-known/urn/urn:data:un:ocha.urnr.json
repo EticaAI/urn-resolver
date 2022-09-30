@@ -2,7 +2,7 @@
   "$schema": "urn:resolver:schema:urnr",
   "@id": "urn:data:un:ocha",
   "meta": {
-    "_comment": "Informal URN.\n",
+    "_comment": "Informal URN. Naming likely to change.\n",
     "spec": "https://cod.unocha.org/",
     "examples": [
       {
@@ -29,6 +29,26 @@
       "out": [
         {
           "iri": "https://data.humdata.org/api/action/package_list"
+        }
+      ]
+    },
+    {
+      "in": {
+        "urn": "urn:data:un:ocha:opendata"
+      },
+      "out": [
+        {
+          "iri": "https://data.humdata.org/api/action/package_list"
+        }
+      ]
+    },
+    {
+      "in": {
+        "urn": "urn:data:un:ocha:taas"
+      },
+      "out": [
+        {
+          "iri": "https://vocabulary.unocha.org/"
         }
       ]
     }
