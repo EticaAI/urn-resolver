@@ -17,7 +17,6 @@
       "in": {
         "urn": "urn:w3id:(.*)"
       },
-      "lb": true,
       "out": [
         {
           "iri": "https://w3id.org/{{ in[1] }}"

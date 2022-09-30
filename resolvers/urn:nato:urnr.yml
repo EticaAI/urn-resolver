@@ -1,6 +1,5 @@
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
-'@id': urn:nato
+"@id": urn:nato
 meta:
   _comment: >
     See RFC 7467. Both <http://nso.nato.int/nso/nsdd/listpromulg.html> and
@@ -9,7 +8,7 @@ meta:
   spec:
     - https://www.rfc-editor.org/rfc/rfc7467
   examples:
-    - in.urn: 'urn:nato:'
+    - in.urn: "urn:nato:"
       out.[0].iri: https://www.nato.int/
 rules:
   - in:

@@ -1,4 +1,4 @@
-# - regex101 (test cases) PCRE2: 
+# - regex101 (test cases) PCRE2:
 #   - https://regex101.com/r/jepenH/1
 #
 # urn:ietf:rfc:2141
@@ -6,11 +6,10 @@
 # urn:ietf:id:ietf-urn-ietf-06
 # urn:ietf:mtg:41-urn
 # urn:ietf:bcp:47
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
-'@id': urn:ietf
+"@id": urn:ietf
 meta:
-  _note: this resolver rule is an early working draft
+  _comment: this resolver rule is an early working draft
   spec: https://datatracker.ietf.org/doc/html/rfc2648
   examples:
     - in.urn: urn:ietf:rfc:2141

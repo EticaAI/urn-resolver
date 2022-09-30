@@ -1,6 +1,5 @@
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
-'@id': urn:git:github
+"@id": urn:git:github
 meta:
   spec:
     - https://docs.github.com/rest
@@ -9,8 +8,8 @@ meta:
       out.[0].iri: https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc
     - in.urn: urn:git:github/search/repositories?q=tetris+language:assembly&sort=stars&order=desc
       out.[0].iri: https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc
-  urn_index:
-    - "urn:git:github:"
+  # urn_index:
+  #   - "urn:git:github:"
 rules:
   - in:
       urn: "urn:git:github:(.*)"

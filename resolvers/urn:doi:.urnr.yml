@@ -1,6 +1,5 @@
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
-'@id': urn:doi
+"@id": urn:doi
 meta:
   spec: https://www.doi.org/doi_handbook/2_Numbering.html#2.6.3
   examples:

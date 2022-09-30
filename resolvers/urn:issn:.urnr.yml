@@ -1,6 +1,5 @@
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
-'@id': urn:issn
+"@id": urn:issn
 meta:
   spec: https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Use_in_URNs
   examples:

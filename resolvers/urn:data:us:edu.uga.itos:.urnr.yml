@@ -1,12 +1,11 @@
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
-'@id': urn:data:us:edu.uga.itos
+"@id": urn:data:us:edu.uga.itos
 meta:
   _comment: >
     Informal URN.
   # spec: null
   examples:
-    - in.urn:  "urn:data:us:edu.uga.itos:codv2api:"
+    - in.urn: "urn:data:us:edu.uga.itos:codv2api:"
       out.[0].iri: https://apps.itos.uga.edu/CODV2API/api/v1/Themes
 rules:
   - in:
@@ -21,4 +20,3 @@ rules:
       urn: "urn:data:us:edu.uga.itos:codv2api:"
     out:
       - iri: "https://apps.itos.uga.edu/CODV2API/api/v1/Themes"
-

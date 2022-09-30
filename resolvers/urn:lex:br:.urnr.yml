@@ -1,9 +1,8 @@
 # @see https://pt.wikipedia.org/wiki/Lex_(URN)
 # @see https://projeto.lexml.gov.br/documentacao/destaques-lexml#nomes-persistentes
 # full example: https://www.lexml.gov.br/urn/urn:lex:br:federal:lei:2008-06-19;11705
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
-'@id': urn:lex:br
+"@id": urn:lex:br
 meta:
   spec:
     - https://en.wikipedia.org/wiki/LexML

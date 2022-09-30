@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:resolver:schema:urnr",
-  "title": "URN Resolver JSON Schema",
+  "title": "URN Resolver JSON Schema (rule files .urnr.{json,yml}",
   "description": "Early draft. See https://github.com/EticaAI/urn-resolver/issues/2",
   "type": "object",
   "unevaluatedProperties": false,
@@ -16,14 +16,35 @@
       "type": "string"
     },
     "rules": {
-      "type": "array"
+      "type": "array",
+      "description": "List of rules"
     },
     "meta": {
       "type": "object",
       "properties": {
-        "_comment": { "type": "string" },
-        "spec": { "type": "string" },
-        "examples": { "type": "array" }
+        "_comment": {
+          "type": "string"
+        },
+        "_internal": {
+          "type": "boolean"
+        },
+        "Cache-Control": {
+          "type": "object"
+        },
+        "spec": {
+          "type": [
+            "string",
+            "array"
+          ]
+        },
+        "examples": {
+          "type": "array",
+          "description": "Examples of input and output"
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "If this is an example to show featured compared to others"
+        }
       },
       "additionalProperties": false
     },

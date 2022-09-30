@@ -5,9 +5,9 @@
 # urn_resolver_internal: true
 
 # https://stats.uptimerobot.com/jYDZlFY8jq
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
+
 $schema: urn:resolver:schema:urnr
-'@id': urn:resolver
+"@id": urn:resolver
 meta:
   _internal: true
   Cache-Control:
@@ -24,7 +24,7 @@ meta:
     #   # out.[0].iri: "{{ urnresolver }}/_/resolver/ping.php"
     # - in.urn: urn:resolver:ping
     #   out.iri: "{{ urnresolver_base.self }}/_/resolver/ping.php"
-      # out.iri: "{{ base_iri }}/_/resolver/ping.php"
+    # out.iri: "{{ base_iri }}/_/resolver/ping.php"
   spec:
     - https://github.com/EticaAI/urn-resolver
 

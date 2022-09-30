@@ -1,13 +1,11 @@
-# yaml-language-server: $schema=https://urn.etica.ai/_/meta/urnresolver-urnr.schema.json
-# x-yaml-language-server: $schema=/workspace/git/EticaAI/urn-resolver/app/public/_/meta/urnresolver-urnr.schema.json
 $schema: urn:resolver:schema:urnr
-'@id': urn:data:un:ocha
+"@id": urn:data:un:ocha
 meta:
   _comment: >
     Informal URN. Naming likely to change.
   spec: https://cod.unocha.org/
   examples:
-    - in.urn:  urn:data:un:ocha:opendata
+    - in.urn: urn:data:un:ocha:opendata
       out.[0].iri: https://data.humdata.org/api/action/package_list
 rules:
   - in:
@@ -27,5 +25,4 @@ rules:
       urn: "urn:data:un:ocha:taas"
     out:
       - iri: "https://vocabulary.unocha.org/"
-
 # @TODO https://vocabulary.unocha.org/json/beta-v4/countries.json
