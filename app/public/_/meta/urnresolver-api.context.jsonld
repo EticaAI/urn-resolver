@@ -18,11 +18,16 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "hydra": "http://www.w3.org/ns/hydra/core#",
     "data": "@nest",
+    "meta": "@nest",
     "error": {
       "@id": "hydra:Error"
     },
     "status": {
       "@id": "hydra:statusCode",
+      "@nest": "error"
+    },
+    "seeAlso": {
+      "@id": "rdfs:seeAlso",
       "@nest": "error"
     },
     "title": {

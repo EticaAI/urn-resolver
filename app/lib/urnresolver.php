@@ -162,9 +162,10 @@ class Response
             '@id' => $base,
             'data' => $data,
             'meta' => [
-                '@type' => 'schema:Message',
-                'schema:name' => 'URN Resolver',
+                // '@type' => 'schema:Message',
+                // 'schema:name' => 'URN Resolver',
                 'schema:dateCreated' => date("c"),
+                'jsonld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE . '/' . $base
                 // // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
                 // "schema:potentialAction" => [
                 //     "schema:name" => "uptime",
@@ -203,14 +204,18 @@ class Response
             'error' => [
                 'status' => $http_status_code,
                 'title' => $http_status_msg,
+                'seeAlso' => ['urn:resolver:index'],
             ],
             'meta' => [
-                '@type' => 'schema:Message',
-                'schema:dateCreated' => date("c"),
-                "schema:potentialAction" => [[
-                    "schema:name" => "urn:resolver:index",
-                    "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
-                ]]
+                'datetime' => date("c"),
+                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',
+                'urn:resolver:index' => "{$this->global_conf['base_iri']}/urn:resolver:index",
+                // '@type' => 'schema:Message',
+                // 'schema:dateCreated' => date("c"),
+                // "schema:potentialAction" => [[
+                //     "schema:name" => "urn:resolver:index",
+                //     "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
+                // ]]
             ]
           ];
 
@@ -247,17 +252,22 @@ class Response
             'error' => [
                 'status' => $http_status_code,
                 'title' => $http_status_msg,
+                'seeAlso' => ['urn:resolver:index'],
             ],
             'meta' => [
-                '@type' => 'schema:Message',
-                'schema:dateCreated' => date("c"),
-                "schema:potentialAction" => [[
-                    "schema:name" => "uptime",
-                    "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
-                ],[
-                    "schema:name" => "urn:resolver:index",
-                    "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
-                ]]
+                'datetime' => date("c"),
+                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',
+                'urnresolver-issues' => 'https://github.com/EticaAI/urn-resolver/issues',
+                // '@type' => 'schema:Message',
+                // 'schema:dateCreated' => date("c"),
+                // 'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE,
+                // "schema:potentialAction" => [[
+                //     "schema:name" => "uptime",
+                //     "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
+                // ],[
+                //     "schema:name" => "urn:resolver:index",
+                //     "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
+                // ]]
             ]
           ];
 
@@ -461,10 +471,10 @@ class Router
     private $active_base;
     private $active_uri;
     private $active_urn = false;
-    private $active_urn_to_uri = false;
+    private $active_urn_to_uri = null;
     private $active_urn_to_httpstatus = 302;
     private $active_rule_prefix = false;
-    private $active_rule_conf = false;
+    private $active_rule_conf = null;
     private array $_logs = [];
     private ?bool $_is_error = null;
     private ?bool $_is_home = false;
@@ -671,54 +681,65 @@ class Router
             $resolver_paths[$key] = $path;
         }
 
+        $urnr = new ResponseURNResolver($this, 'urn:resolver:_summary');
+        $urnr->execute();
+
+        // var_dump($urnr->data['resolver_ops']);die;
+        $welcome_ops = $urnr->data['resolver_ops'];
+
         $result = [
             // '$schema' => 'https://jsonapi.org/schema',
             // @TODO make this also an URN (with htaccess rewirte for performance reason)
             '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
+            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
             // '$id' => $base,
             // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
             // '@id' => $base,
             '@id' => URNRESOLVER_BASE, // home page, display the site URL
-            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
-            '@type' => 'schema:Action',
+            '@type' => 'hydra:Collection',
             // 'schema:endTime' => date("c"),
-            'data' => [
-                // 'type' => "schema:Action",
-                'id' => $this->config->base_iri,
-                'relationships' => [
-                    'vurn:resolver:index' => [
-                        'links' => [
-                            'self' => "{$this->config->base_iri}/urn:resolver:index"
-                        ]
-                    ],
-                    'vurn:resolver:_explore' => [
-                        'links' => [
-                            'self' => "{$this->config->base_iri}/urn:resolver:_explore"
-                        ]
-                    ],
-                    'vurn:resolver:ping' => [
-                        'links' => [
-                            'self' => "{$this->config->base_iri}/urn:resolver:ping"
-                        ]
-                    ]
-                ],
-                // 'resolvers' => $resolver_paths,
-                // Change this later
-                // 'attributes' => $resolver_paths,
-            ],
+            'data' => $welcome_ops,
+            // 'data' => [
+            //     // 'type' => "schema:Action",
+            //     'id' => $this->config->base_iri,
+            //     'relationships' => [
+            //         'vurn:resolver:index' => [
+            //             'links' => [
+            //                 'self' => "{$this->config->base_iri}/urn:resolver:index"
+            //             ]
+            //         ],
+            //         'vurn:resolver:_explore' => [
+            //             'links' => [
+            //                 'self' => "{$this->config->base_iri}/urn:resolver:_explore"
+            //             ]
+            //         ],
+            //         'vurn:resolver:ping' => [
+            //             'links' => [
+            //                 'self' => "{$this->config->base_iri}/urn:resolver:ping"
+            //             ]
+            //         ]
+            //     ],
+            //     // 'resolvers' => $resolver_paths,
+            //     // Change this later
+            //     // 'attributes' => $resolver_paths,
+            // ],
             // 'links' => [
             //     'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq'
             // ],
             'meta' => [
-                '@type' => 'schema:Message',
-                'schema:name' => 'URN Resolver',
+                // '@type' => 'schema:Message',
+                // 'schema:name' => 'URN Resolver',
                 // 'schema:dateCreated' => date("c"),
-                'schema:endTime' => date("c"),
+                // 'schema:endTime' => date("c"),
+                'datetime' => date("c"),
                 // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
-                "schema:potentialAction" => [
-                    "schema:name" => "uptime",
-                    "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
-                ]
+                'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE,
+                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',
+                // "schema:potentialAction" => [
+                //     "schema:name" => "uptime",
+                //     "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
+                // ]
+                
             ]
           ];
 
