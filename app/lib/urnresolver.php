@@ -7,10 +7,28 @@ namespace URNResolver;
 date_default_timezone_set('UTC');
 define("ROOT_PATH", dirname(dirname(__FILE__)));
 define("RESOLVER_RULE_PATH", ROOT_PATH . '/public/.well-known/urn');
-
 $global_conf = new Config();
-
 define("URNRESOLVER_BASE", $global_conf->base_iri);
+
+$extention_to_media_type = [
+    '.csv' => 'text/csv; charset=utf-8',
+    '.json' => 'application/json; charset=utf-8',
+    '.jsonld' => 'application/ld+json; charset=utf-8',
+    '.tsv' => 'text/tab-separated-values; charset=utf-8',
+    '.hxl.csv' => 'text/csv; charset=utf-8',
+    '.hxl.tsv' => 'text/tab-separated-values; charset=utf-8',
+];
+
+$processor_tabular = [
+    'delimiter' => [
+        '.csv' => ",",
+        '.hxl.csv' => ",",
+        '.tsv' => "\t",
+        '.hxl.tsv' => "\t",
+    ]
+];
+
+// @TODO implement profiles https://www.w3.org/TR/dx-prof-conneg/
 
 // https://www.php-fig.org/psr/psr-12/
 
@@ -105,6 +123,8 @@ class Response
     private int $stale_while_revalidate = 0;
     private int $stale_if_error = 0;
 
+    private string $content_type = 'application/json; charset=utf-8';
+
     # https://emojipedia.org/pt/envelope/
     # https://urn.etica.ai/urn:resolver:ping?✉️=txt
 
@@ -118,11 +138,18 @@ class Response
         'stale_if_error' => 'stale-if-error',
     ];
 
-    public function __construct(Config $config, string $mode = 'default')
-    {
+    public function __construct(
+        Config $config,
+        string $mode = 'default',
+        array $meta = null
+    ) {
         $this->global_conf = $config->global_conf;
         $cc_active = $this->global_conf['Cache-Control'][$mode];
         $this->_set_options($cc_active);
+
+        if (!empty($meta)) {
+            $this->content_type = $meta['content_type'] ?? $this->content_type;
+        }
     }
 
     private function _set_options($options)
@@ -138,6 +165,17 @@ class Response
                 $this->{$key} = $options[$value];
             }
         }
+    }
+
+    private function _output_tabular(
+        array $data_tabular,
+        $delimiter = "\t"
+    ) {
+        $out = fopen('php://output', 'w');
+        foreach ($data_tabular as $line) {
+            fputcsv($out, $line, $delimiter);
+        }
+        fclose($out);
     }
 
     public function set_active_urnr($urnr_group, $urnr_specific = null)
@@ -295,6 +333,69 @@ class Response
     }
 }
 
+
+/**
+ * @see https://www.rfc-editor.org/rfc/rfc8141
+ * @see https://www.php.net/manual/en/function.parse-url.php
+ */
+class URNParser
+{
+    public ?string $raw_urn;
+
+    // Generic IRI/URI/URL/URN
+    public ?string $scheme;
+    public ?string $host;
+    public ?string $port;
+    public ?string $user;
+    public ?string $pass;
+    public ?string $path;
+    public ?string $query;
+    public ?string $fragment;
+
+    // convenience (break query parts)
+    public ?array $query_parts;
+
+    // Specific to URNs
+    // https://www.rfc-editor.org/rfc/rfc8141
+    public ?string $nid; // Lower case (if applicable)
+    public ?string $nss;
+    public ?array $nss_parts;
+
+    public function __construct(string $raw_urn)
+    {
+        $this->raw_urn = $raw_urn;
+        $parsed = parse_url($raw_urn);
+        if ($parsed) {
+            $this->scheme = $parsed['scheme'] ?? null;
+            $this->host = $parsed['host'] ?? null;
+            $this->port = $parsed['port'] ?? null;
+            $this->user = $parsed['user'] ?? null;
+            $this->pass = $parsed['pass'] ?? null;
+            $this->path = $parsed['path'] ?? null;
+            $this->query = $parsed['query'] ?? null;
+            $this->fragment = $parsed['fragment'] ?? null;
+            # parse_str
+        }
+        if (!is_null($this->query)) {
+            parse_str($this->query, $this->query_parts);
+        }
+        if ($this->scheme === 'urn' && !empty($this->path)) {
+            $path_parts = explode(':', $this->path);
+            $this->nid = strtolower(array_shift($path_parts));
+            $this->nss = implode(':', $path_parts);
+            $this->nss_parts = $path_parts;
+        }
+    }
+}
+
+class URNParserResolver extends URNParser
+{
+    public function __construct(string $urn)
+    {
+        parent::__construct($urn);
+    }
+}
+
 /**
  * Specialized class to create content for resolver itself.
  * This is necessary since (most of the time) makes no sense redirect
@@ -309,6 +410,10 @@ class ResponseURNResolver
     public array $data_tabular;
     public string $format = 'json'; // json(ld), txt, tsv
     public $errors;
+
+    private ?string $content_type = null;
+    private ?string $file_extension = null;
+    private bool $file_is_tabular = false;
 
     // @TODO create shortcuts such as
     //       https://json-ld.org/playground/#json-ld=https://urn.etica.ai/urn:resolver:index
@@ -388,6 +493,12 @@ class ResponseURNResolver
 
     public function execute()
     {
+        var_dump(parse_url($this->urn));
+
+        $parsed_urn = new URNParser($this->urn);
+        var_dump($parsed_urn);
+        die;
+
         if ($this->urn === 'urn:resolver:ping') {
             return $this->operation_ping();
         }
@@ -432,6 +543,15 @@ class ResponseURNResolver
             'title' => 'Not Implemented'
         ];
         return $this->is_success();
+    }
+
+    public function get_output_meta()
+    {
+        return [
+            'content_type' => $this->content_type ?? null,
+            'file_extension' => $this->file_extension ?? null,
+            'file_is_tabular' => $this->file_is_tabular
+        ];
     }
 
     public function is_success()
