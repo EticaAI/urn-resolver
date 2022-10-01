@@ -14,9 +14,6 @@
         "in.urn": "urn:resolver:index"
       },
       {
-        "in.urn": "urn:resolver:help"
-      },
-      {
         "in.urn": "urn:resolver:_explore"
       },
       {

@@ -306,6 +306,8 @@ class ResponseURNResolver
     public string $urn;
     public Router $router;
     public $data;
+    public array $data_tabular;
+    public string $format = 'json'; // json(ld), txt, tsv
     public $errors;
 
     // @TODO create shortcuts such as
@@ -390,13 +392,22 @@ class ResponseURNResolver
             return $this->operation_ping();
         }
 
-        if (in_array($this->urn, [
-            'urn:resolver:ping?✉️=txt',
-            'urn:resolver:ping?%E2%9C%89=txt',
-            'urn:resolver:ping?u2709=txt'
-            ])) {
-            return $this->operation_ping($envelope='txt');
+        if ($this->urn === 'urn:resolver:ping?u2709=.txt') {
+            return $this->operation_ping('txt');
         }
+
+        if ($this->urn === 'urn:resolver:ping?u2709=.tsv') {
+            return $this->operation_ping('tsv');
+        }
+
+        // if (in_array($this->urn, [
+        //     // 'urn:resolver:ping?✉️=txt',
+        //     // 'urn:resolver:ping?%E2%9C%89=txt',
+        //     'urn:resolver:ping?u2709=txt',
+        //     'urn:resolver:ping?u2709=tsv',
+        //     ])) {
+        //     return $this->operation_ping($envelope='txt');
+        // }
 
         if ($this->urn === 'urn:resolver:index') {
             return $this->operation_index();
@@ -477,6 +488,14 @@ class ResponseURNResolver
             header("Content-type: text/plain; charset=utf-8");
             echo "PONG\n";
             echo date("c") . "\n";
+            die;
+        }
+
+        if ($envelope === 'tsv') {
+            header("Content-type: text/tab-separated-values; charset=utf-8");
+            echo "#item+request+id\t#item+response+body\t#date\n";
+            echo "urn:resolver:ping\tPONG\t" . date("c") . "\n";
+            // echo  . "\n";
             die;
         }
 
