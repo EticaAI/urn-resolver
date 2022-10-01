@@ -1,0 +1,14 @@
+{
+  "@context": {
+     "@vocab": "http://example/vocab/",
+     "group1": "@nesting"
+  },
+  "@id": "http://example/mything",
+  "group1": {
+     "a": "Value A1",
+     "b": "Value B1",
+     "c": "Value C1"
+
+  },
+  "aaaaaa": {"aa": "ccc", "ddd": {"eeee":"fff"}}
+}

@@ -13,7 +13,9 @@ Prefixes uses https://github.com/w3c/json-ld-rc/ (https://w3c.github.io/json-ld-
 
 
 ### urnresolver-api-extra.context.jsonld
-> temp, see https://github.com/json-api/json-api/issues/587#issuecomment-103367380
+> temp, see 
+> - https://github.com/json-api/json-api/issues/587#issuecomment-103367380
+> - REALLY NICE EXAMPLE! https://github.com/json-ld/json-ld.org/issues/246#issuecomment-271404914
 
 ## Relation to other APIs
 

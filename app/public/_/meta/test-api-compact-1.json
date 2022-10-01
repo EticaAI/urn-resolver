@@ -1,0 +1,32 @@
+{
+  "@context": {
+    "links": {
+      "@id": "_:links",
+      "@container": "@set"
+    },
+    "attributes": {
+      "@id": "_:attributes",
+      "@container": "@set"
+    },
+    "self": {
+      "@type": "urn:iri",
+      "@id": "urn:urn",
+      "@nest": "attributes"
+    },
+    "collection": {
+      "@id": "urn:urn",
+      "@nest": "attributes"
+    }
+  },
+  "@id": "http://example.com/live-events/4",
+  "@type": "http://schema.org/Event",
+  "id": "4",
+  "type": "live-events",
+  "links": {
+    "self": "http://example.com/live-events/4",
+    "collection": [
+      "http://example.com/events",
+      "http://example.com/live-events"
+    ]
+  }
+}
