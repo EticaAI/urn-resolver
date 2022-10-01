@@ -10,23 +10,26 @@ define("RESOLVER_RULE_PATH", ROOT_PATH . '/public/.well-known/urn');
 $global_conf = new Config();
 define("URNRESOLVER_BASE", $global_conf->base_iri);
 
-$extention_to_media_type = [
-    '.csv' => 'text/csv; charset=utf-8',
-    '.json' => 'application/json; charset=utf-8',
-    '.jsonld' => 'application/ld+json; charset=utf-8',
-    '.tsv' => 'text/tab-separated-values; charset=utf-8',
-    '.hxl.csv' => 'text/csv; charset=utf-8',
-    '.hxl.tsv' => 'text/tab-separated-values; charset=utf-8',
-];
 
-$processor_tabular = [
-    'delimiter' => [
+class Common
+{
+    public const EXT_TO_MEDIATYPE = [
+        '.csv' => 'text/csv; charset=utf-8',
+        '.json' => 'application/json; charset=utf-8',
+        '.jsonld' => 'application/ld+json; charset=utf-8',
+        '.tsv' => 'text/tab-separated-values; charset=utf-8',
+        '.txt' => 'text/plain; charset=utf-8',
+        '.hxl.csv' => 'text/csv; charset=utf-8',
+        '.hxl.tsv' => 'text/tab-separated-values; charset=utf-8',
+    ];
+
+    public const EXT_TABULAR_DELIMITER = [
         '.csv' => ",",
         '.hxl.csv' => ",",
         '.tsv' => "\t",
         '.hxl.tsv' => "\t",
-    ]
-];
+    ];
+}
 
 // @TODO implement profiles https://www.w3.org/TR/dx-prof-conneg/
 
@@ -337,6 +340,11 @@ class Response
 /**
  * @see https://www.rfc-editor.org/rfc/rfc8141
  * @see https://www.php.net/manual/en/function.parse-url.php
+ *
+ * @example
+ * // https://www.rfc-editor.org/rfc/rfc8141#section-2.3.1
+ * urn:example:weather?=op=map&lat=39.56&lon=-104.85&datetime=1969-07-21T02:56:15Z
+ *
  */
 class URNParser
 {
@@ -360,6 +368,10 @@ class URNParser
     public ?string $nid; // Lower case (if applicable)
     public ?string $nss;
     public ?array $nss_parts;
+    public ?string $q_component;
+    public ?string $f_component;
+
+    public ?array $q_component_parts;
 
     public function __construct(string $raw_urn)
     {
@@ -384,15 +396,45 @@ class URNParser
             $this->nid = strtolower(array_shift($path_parts));
             $this->nss = implode(':', $path_parts);
             $this->nss_parts = $path_parts;
+
+            // https://www.rfc-editor.org/rfc/rfc8141#section-2.3.2
+            $temp_q = explode('?=', $this->raw_urn);
+            if (count($temp_q) > 1) {
+                $q_and_maybe_f = $temp_q[1];
+                $temp_qf = explode('#', $q_and_maybe_f);
+                $this->q_component = $temp_qf[0];
+                parse_str($this->q_component, $this->q_component_parts);
+            }
+            // https://www.rfc-editor.org/rfc/rfc8141#section-2.3.3
+            $temp_f = explode('#', $this->raw_urn);
+            if (count($temp_f) > 1) {
+                $this->f_component = array_pop($temp_f);
+            }
         }
     }
 }
 
 class URNParserResolver extends URNParser
 {
+    public ?string $file_extension;
+    public ?string $media_type;
+
     public function __construct(string $urn)
     {
         parent::__construct($urn);
+        // if ($this->nid === 'resolver') {
+        //     if (!empty($this->query_parts['u2709'])) {
+        //         $this->file_extension = $this->query_parts['u2709'];
+        //         $this->media_type = Common::EXT_TO_MEDIATYPE[$this->file_extension];
+        //     }
+        // }
+        // var_dump($this);die;
+        if (!empty($this->q_component_parts)) {
+            if (!empty($this->q_component_parts['u2709'])) {
+                $this->file_extension = $this->q_component_parts['u2709'];
+                $this->media_type = Common::EXT_TO_MEDIATYPE[$this->file_extension];
+            }
+        }
     }
 }
 
@@ -493,11 +535,16 @@ class ResponseURNResolver
 
     public function execute()
     {
-        var_dump(parse_url($this->urn));
+        // var_dump(parse_url($this->urn));
 
-        $parsed_urn = new URNParser($this->urn);
-        var_dump($parsed_urn);
-        die;
+        // $test = 'urn:example:weather?=op=map&lat=39.56&lon=-104.85&datetime=1969-07-21T02:56:15Z#lalala#lelele';
+
+        // $parsed_urn = new URNParserResolver($test);
+        // var_dump($parsed_urn);
+
+        // $parsed_urn = new URNParserResolver($this->urn);
+        // var_dump($parsed_urn);
+        // die;
 
         if ($this->urn === 'urn:resolver:ping') {
             return $this->operation_ping();
