@@ -1,0 +1,32 @@
+# No directory listings
+<IfModule autoindex>
+  IndexIgnore *
+</IfModule>
+
+<IfModule mod_expires.c>
+  AddType application/json          json map topojson
+  AddType application/ld+json       jsonld
+  AddType application/geo+json      geojson
+  AddType application/rdf+xml       rdf
+</IfModule>
+
+Header add Access-Control-Allow-Origin "*"
+Header add Access-Control-Allow-Methods: "GET,POST,HEAD,OPTIONS,DELETE,PUT"
+
+# Options +FollowSymlinks
+Options -Indexes
+
+RewriteEngine On
+
+# RewriteBase /
+
+# For sake of performance, some URNs are served by Apache, not by the application
+RewriteRule ^urn:resolver:schema:urnr$ "_/meta/urnresolver-urnr.schema.json"
+RewriteRule ^urn:resolver:schema:api:base$ "_/meta/urnresolver-api-base.schema.json"
+RewriteRule ^urn:resolver:context:api:base$ "_/meta/urnresolver-api-base.context.jsonld"
+
+# Everything else neither file or directory, pass to index.php to resolve
+RewriteCond %{REQUEST_URI} !^/index\.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L]

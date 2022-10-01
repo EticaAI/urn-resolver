@@ -1,14 +1,23 @@
 <?php
 
-// @see https://blog.10kilobyte.com/blog/view/43/php-built-in-server-and-routing-static-content
-// @see https://www.php.net/manual/en/features.commandline.webserver.php
-
 // only router.php if cli-server
 if (php_sapi_name() == 'cli-server') {
-    $info = parse_url($_SERVER['REQUEST_URI']);
-    if (file_exists("./$info[path]")) {
+    $path = parse_url($_SERVER['REQUEST_URI'])['path'];
+
+    if (file_exists("./$path")) {
         return false;
     } else {
+        // In production, these paths are expected to be served by Apache/Nginx
+        $hardcoded = [
+            '/urn:resolver:schema:urnr' => '_/meta/urnresolver-urnr.schema.json',
+            '/urn:resolver:schema:api:base' => '_/meta/urnresolver-api-base.schema.json',
+            '/urn:resolver:context:api:base' => '_/meta/urnresolver-api-base.context.jsonld',
+        ];
+        if (!empty($hardcoded[$path])) {
+            print(file_get_contents($hardcoded[$path]));
+            return true;
+        }
+
         include_once "index.php";
         return true;
     }

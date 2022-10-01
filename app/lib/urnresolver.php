@@ -155,10 +155,10 @@ class Response
         $result = [
             // '$schema' => 'https://jsonapi.org/schema',
             // @TODO make this also an URN (with htaccess rewirte for performance reason)
-            '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
+            '$schema' => URNRESOLVER_BASE . '/urn:resolver:schema:api:base',
             // '$id' => $base,
             // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
-            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
+            '@context' => URNRESOLVER_BASE . '/urn:resolver:context:api:base',
             '@id' => $base,
             'data' => $data,
             'meta' => [
@@ -196,10 +196,10 @@ class Response
         $result = [
             // '$schema' => 'https://jsonapi.org/schema',
             // @TODO make this also an URN (with htaccess rewirte for performance reason)
-            '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
+            '$schema' => URNRESOLVER_BASE . '/urn:resolver:schema:api:base',
             // '$id' => $base,
             // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
-            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
+            '@context' => URNRESOLVER_BASE . '/urn:resolver:context:api:base',
             '@id' => $base,
             'error' => [
                 'status' => $http_status_code,
@@ -244,10 +244,10 @@ class Response
         $result = [
             // '$schema' => 'https://jsonapi.org/schema',
             // @TODO make this also an URN (with htaccess rewirte for performance reason)
-            '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
+            '$schema' => URNRESOLVER_BASE . '/urn:resolver:schema:api:base',
             // '$id' => $base,
             // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
-            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
+            '@context' => URNRESOLVER_BASE . '/urn:resolver:context:api:base',
             '@id' => $base,
             'error' => [
                 'status' => $http_status_code,
@@ -690,8 +690,8 @@ class Router
         $result = [
             // '$schema' => 'https://jsonapi.org/schema',
             // @TODO make this also an URN (with htaccess rewirte for performance reason)
-            '$schema' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.schema.json',
-            '@context' => URNRESOLVER_BASE . '/_/meta/urnresolver-api.context.jsonld',
+            '$schema' => URNRESOLVER_BASE . '/urn:resolver:schema:api:base',
+            '@context' => URNRESOLVER_BASE . '/urn:resolver:context:api:base',
             // '$id' => $base,
             // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
             // '@id' => $base,

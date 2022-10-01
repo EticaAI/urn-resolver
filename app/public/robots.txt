@@ -1,0 +1,8 @@
+# Explicity allow these paths
+User-agent: *
+Allow: /
+Allow: /.well-known/urn
+
+# Content served by routing or SEF urls (avoid double indexing)
+User-agent: *
+Disallow: /_/
