@@ -24,6 +24,7 @@ RewriteEngine On
 RewriteRule ^urn:resolver:schema:urnr$ "_/meta/urnresolver-urnr.schema.json"
 RewriteRule ^urn:resolver:schema:api:base$ "_/meta/urnresolver-api-base.schema.json"
 RewriteRule ^urn:resolver:context:api:base$ "_/meta/urnresolver-api-base.context.jsonld"
+RewriteRule ^urn:resolver:context:api:extra$ "_/meta/urnresolver-api-extra.context.jsonld"
 
 # Everything else neither file or directory, pass to index.php to resolve
 RewriteCond %{REQUEST_URI} !^/index\.php

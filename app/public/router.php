@@ -12,6 +12,7 @@ if (php_sapi_name() == 'cli-server') {
             '/urn:resolver:schema:urnr' => '_/meta/urnresolver-urnr.schema.json',
             '/urn:resolver:schema:api:base' => '_/meta/urnresolver-api-base.schema.json',
             '/urn:resolver:context:api:base' => '_/meta/urnresolver-api-base.context.jsonld',
+            '/urn:resolver:context:api:extra' => '_/meta/urnresolver-api-extra.context.jsonld',
         ];
         if (!empty($hardcoded[$path])) {
             print(file_get_contents($hardcoded[$path]));

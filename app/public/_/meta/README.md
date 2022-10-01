@@ -11,6 +11,10 @@ Prefixes uses https://github.com/w3c/json-ld-rc/ (https://w3c.github.io/json-ld-
 > - [urnresolver.schema.json](urnresolver.schema.json)
 > - Ideal path to serve: `{resolver}/urn:resolver:meta:context:urnr`
 
+
+### urnresolver-api-extra.context.jsonld
+> temp, see https://github.com/json-api/json-api/issues/587#issuecomment-103367380
+
 ## Relation to other APIs
 
 ### OpenAPI

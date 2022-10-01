@@ -1,0 +1,19 @@
+{
+  "@context": [
+    "https://urn.etica.ai/urn:resolver:context:api:base",
+    {
+      "links": {
+        "@id": "_:links",
+        "@container": "@set"
+      },
+      "attributes": {
+        "@id": "_:attributes",
+        "@container": "@set"
+      },
+      "relationships": {
+        "@id": "_:relationships",
+        "@container": "@set"
+      }
+    }
+  ]
+}
