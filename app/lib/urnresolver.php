@@ -164,8 +164,9 @@ class Response
             'meta' => [
                 // '@type' => 'schema:Message',
                 // 'schema:name' => 'URN Resolver',
-                'schema:dateCreated' => date("c"),
-                'jsonld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE . '/' . $base
+                // 'schema:dateCreated' => date("c"),
+                'datetime' => date("c"),
+                'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE . '/' . $base
                 // // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
                 // "schema:potentialAction" => [
                 //     "schema:name" => "uptime",
@@ -322,6 +323,8 @@ class ResponseURNResolver
     {
         $examples = [];
         $resolver_ops = new \stdClass();
+        // array_unshift($this->data, ['@type' => '_:TODO']);
+        $resolver_ops->{'@type'} = 'vurnr:todo_ops';
 
         foreach (glob(RESOLVER_RULE_PATH . "/*.urnr.json") as $filepath) {
             $filename = str_replace(RESOLVER_RULE_PATH, '', $filepath);
@@ -432,6 +435,9 @@ class ResponseURNResolver
         $summary = $this->_get_urnr_values();
 
         $this->data = (array) $summary;
+
+        // array_unshift($this->data, ['@type' => '_:TODO']);
+        // var_dump($this->data);die;
 
         return true;
         // return $this->is_success();
@@ -686,6 +692,9 @@ class Router
 
         // var_dump($urnr->data['resolver_ops']);die;
         $welcome_ops = $urnr->data['resolver_ops'];
+        // $welcome_ops->{'@type'} = '_:TODO';
+
+        // var_dump( $welcome_ops);die;
 
         $result = [
             // '$schema' => 'https://jsonapi.org/schema',
@@ -696,50 +705,14 @@ class Router
             // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
             // '@id' => $base,
             '@id' => URNRESOLVER_BASE, // home page, display the site URL
-            '@type' => 'hydra:Collection',
-            // 'schema:endTime' => date("c"),
+            // '@type' => ['hydra:Collection', 'schema:Action'],
+            // '@type' => 'hydra:Collection',
             'data' => $welcome_ops,
-            // 'data' => [
-            //     // 'type' => "schema:Action",
-            //     'id' => $this->config->base_iri,
-            //     'relationships' => [
-            //         'vurn:resolver:index' => [
-            //             'links' => [
-            //                 'self' => "{$this->config->base_iri}/urn:resolver:index"
-            //             ]
-            //         ],
-            //         'vurn:resolver:_explore' => [
-            //             'links' => [
-            //                 'self' => "{$this->config->base_iri}/urn:resolver:_explore"
-            //             ]
-            //         ],
-            //         'vurn:resolver:ping' => [
-            //             'links' => [
-            //                 'self' => "{$this->config->base_iri}/urn:resolver:ping"
-            //             ]
-            //         ]
-            //     ],
-            //     // 'resolvers' => $resolver_paths,
-            //     // Change this later
-            //     // 'attributes' => $resolver_paths,
-            // ],
-            // 'links' => [
-            //     'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq'
-            // ],
             'meta' => [
-                // '@type' => 'schema:Message',
-                // 'schema:name' => 'URN Resolver',
-                // 'schema:dateCreated' => date("c"),
-                // 'schema:endTime' => date("c"),
                 'datetime' => date("c"),
                 // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
                 'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE,
-                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',
-                // "schema:potentialAction" => [
-                //     "schema:name" => "uptime",
-                //     "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
-                // ]
-                
+                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',              
             ]
           ];
 

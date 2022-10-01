@@ -17,10 +17,15 @@
     "xml": "http://www.w3.org/XML/1998/namespace",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "hydra": "http://www.w3.org/ns/hydra/core#",
-    "data": "@nest",
-    "meta": "@nest",
+    "data": {
+      "@id": "hydra:Collection"
+    },
     "error": {
       "@id": "hydra:Error"
+    },
+    "meta": {
+      "@id": "schema:seeAlso",
+      "@type": "hydra:Collection"
     },
     "status": {
       "@id": "hydra:statusCode",
@@ -34,6 +39,8 @@
       "@id": "hydra:Status",
       "@nest": "error"
     },
-    "$schema": null
+    "$schema": null,
+    "vurnr": "urn:resolver:vocab:",
+    "@vocab": "vurnr:_temp#"
   }
 }
