@@ -14,7 +14,7 @@ meta:
     _cc_mode: internal
 
   examples:
-    - in.urn: urn:resolver:ping
+    - in.urn: urn:resolver:ping?u2709=txt
     - in.urn: urn:resolver:index
     - in.urn: urn:resolver:help
     - in.urn: urn:resolver:_explore

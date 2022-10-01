@@ -105,6 +105,9 @@ class Response
     private int $stale_while_revalidate = 0;
     private int $stale_if_error = 0;
 
+    # https://emojipedia.org/pt/envelope/
+    # https://urn.etica.ai/urn:resolver:ping?✉️=txt
+
     private array $_opts = [
         // '_cc_mode' => '_cc_mode', // special case, pre initialize defaults
         '_cc_prefix' => '_cc_prefix',
@@ -387,6 +390,14 @@ class ResponseURNResolver
             return $this->operation_ping();
         }
 
+        if (in_array($this->urn, [
+            'urn:resolver:ping?✉️=txt',
+            'urn:resolver:ping?%E2%9C%89=txt',
+            'urn:resolver:ping?u2709=txt'
+            ])) {
+            return $this->operation_ping($envelope='txt');
+        }
+
         if ($this->urn === 'urn:resolver:index') {
             return $this->operation_index();
         }
@@ -460,8 +471,15 @@ class ResponseURNResolver
         // return $this->is_success();
     }
 
-    public function operation_ping()
+    public function operation_ping(string $envelope = null)
     {
+        if ($envelope === 'txt') {
+            header("Content-type: text/plain; charset=utf-8");
+            echo "PONG\n";
+            echo date("c") . "\n";
+            die;
+        }
+
         $this->data = [
             'message' => "PONG"
         ];
@@ -712,7 +730,7 @@ class Router
                 'datetime' => date("c"),
                 // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
                 'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE,
-                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',              
+                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',
             ]
           ];
 

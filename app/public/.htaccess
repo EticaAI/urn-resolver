@@ -1,6 +1,7 @@
 # No directory listings
 <IfModule autoindex>
   IndexIgnore *
+  Options -Indexes
 </IfModule>
 
 <IfModule mod_expires.c>
@@ -10,16 +11,20 @@
   AddType application/rdf+xml       rdf
 </IfModule>
 
+# CORS
 Header add Access-Control-Allow-Origin "*"
-Header add Access-Control-Allow-Methods: "GET,POST,HEAD,OPTIONS,DELETE,PUT"
+# Header add Access-Control-Allow-Methods: "GET,POST,HEAD,OPTIONS,DELETE,PUT"
+Header add Access-Control-Allow-Methods: "GET,HEAD,OPTIONS"
 
-# Options +FollowSymlinks
-Options -Indexes
+RewriteEngine on
+RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|PUT|DELETE|CONNECT|POST)
+RewriteRule .* - [L,R=405]
+
+ErrorDocument 405 /_/error/error405.json
+ErrorDocument 500 /_/error/error500.json
+ErrorDocument 503 /_/error/error503.json
 
 RewriteEngine On
-
-# RewriteBase /
-
 # For sake of performance, some URNs are served by Apache, not by the application
 RewriteRule ^urn:resolver:schema:urnr$ "_/meta/urnresolver-urnr.schema.json"
 RewriteRule ^urn:resolver:schema:api:base$ "_/meta/urnresolver-api-base.schema.json"
