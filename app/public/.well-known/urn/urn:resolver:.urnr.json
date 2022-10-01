@@ -8,7 +8,7 @@
     },
     "examples": [
       {
-        "in.urn": "urn:resolver:ping?u2709=txt"
+        "in.urn": "urn:resolver:ping?=u2709=.txt"
       },
       {
         "in.urn": "urn:resolver:index"

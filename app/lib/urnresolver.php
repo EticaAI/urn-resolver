@@ -29,6 +29,9 @@ class Common
         '.tsv' => "\t",
         '.hxl.tsv' => "\t",
     ];
+
+    // @TODO implement special format for
+    //       415 Unsupported Media Type (RFC 7231)
 }
 
 // @TODO implement profiles https://www.w3.org/TR/dx-prof-conneg/
@@ -368,6 +371,7 @@ class URNParser
     public ?string $nid; // Lower case (if applicable)
     public ?string $nss;
     public ?array $nss_parts;
+    public ?string $r_component;
     public ?string $q_component;
     public ?string $f_component;
 
@@ -391,18 +395,47 @@ class URNParser
         if (!is_null($this->query)) {
             parse_str($this->query, $this->query_parts);
         }
+
         if ($this->scheme === 'urn' && !empty($this->path)) {
+            // PHP parse_str() get lost on "?=op=map" part of RFC 8141,
+            // so if is URN, we repeat the $this->query_parts.
+            // Example:
+            //   urn:example:weather?=op=map&lat=39.56&lon=-104.85
+            // if (strpos($this->query, '=') === 0) {
+            //     // nevermind, just use $this->q_component_parts. It works
+            //     // without messing with parse_str
+            //     parse_str($this->query, $this->query_parts);
+            // }
+
             $path_parts = explode(':', $this->path);
             $this->nid = strtolower(array_shift($path_parts));
             $this->nss = implode(':', $path_parts);
             $this->nss_parts = $path_parts;
+
+            // https://www.rfc-editor.org/rfc/rfc8141#section-2.3.1
+            // (...) Thus, r-components SHOULD NOT be used for URNs
+            //  before their semantics have been standardized.
+            $temp_r = explode('?+', $this->raw_urn);
+            if (count($temp_r) > 1) {
+                $r_and_maybe_q = $temp_r[1];
+                $temp_rq = explode('?=', $r_and_maybe_q);
+                $this->r_component = $temp_rq[0];
+                // parse_str($this->q_component, $this->q_component_parts);
+            }
 
             // https://www.rfc-editor.org/rfc/rfc8141#section-2.3.2
             $temp_q = explode('?=', $this->raw_urn);
             if (count($temp_q) > 1) {
                 $q_and_maybe_f = $temp_q[1];
                 $temp_qf = explode('#', $q_and_maybe_f);
-                $this->q_component = $temp_qf[0];
+
+                if (empty($this->r_component)) {
+                    $this->q_component = $temp_qf[0];
+                } else {
+                    // @TODO deal with r-components + q-component
+                    $this->q_component = $temp_qf[0];
+                }
+
                 parse_str($this->q_component, $this->q_component_parts);
             }
             // https://www.rfc-editor.org/rfc/rfc8141#section-2.3.3
@@ -446,7 +479,7 @@ class URNParserResolver extends URNParser
 class ResponseURNResolver
 {
     public int $http_status = 200;
-    public string $urn;
+    public URNParserResolver $urn;
     public Router $router;
     public $data;
     public array $data_tabular;
@@ -465,7 +498,7 @@ class ResponseURNResolver
     // - https://github.com/json-api/json-api/blob/5916f19833847df8fb05fdd42641bd4b111be178/_schemas/1.1/schema_create_resource.json
     // - https://github.com/json-api/json-api/pull/1603
 
-    public function __construct(Router $router, string $urn)
+    public function __construct(Router $router, URNParserResolver $urn)
     {
         $this->router = $router;
         $this->urn = $urn;
@@ -535,7 +568,8 @@ class ResponseURNResolver
 
     public function execute()
     {
-        // var_dump(parse_url($this->urn));
+        // var_dump($this->urn->raw_urn);
+        // die;
 
         // $test = 'urn:example:weather?=op=map&lat=39.56&lon=-104.85&datetime=1969-07-21T02:56:15Z#lalala#lelele';
 
@@ -546,15 +580,24 @@ class ResponseURNResolver
         // var_dump($parsed_urn);
         // die;
 
-        if ($this->urn === 'urn:resolver:ping') {
+        if (empty($this->urn->raw_urn)) {
+            $this->http_status = 400;
+            $errors = [
+                'status' => 400,
+                'title' => 'Bad Request'
+            ];
+            return false;
+        }
+
+        if ($this->urn->raw_urn === 'urn:resolver:ping') {
             return $this->operation_ping();
         }
 
-        if ($this->urn === 'urn:resolver:ping?u2709=.txt') {
+        if ($this->urn->raw_urn === 'urn:resolver:ping?u2709=.txt') {
             return $this->operation_ping('txt');
         }
 
-        if ($this->urn === 'urn:resolver:ping?u2709=.tsv') {
+        if ($this->urn->raw_urn === 'urn:resolver:ping?u2709=.tsv') {
             return $this->operation_ping('tsv');
         }
 
@@ -567,24 +610,24 @@ class ResponseURNResolver
         //     return $this->operation_ping($envelope='txt');
         // }
 
-        if ($this->urn === 'urn:resolver:index') {
+        if ($this->urn->raw_urn === 'urn:resolver:index') {
             return $this->operation_index();
         }
 
-        if ($this->urn === 'urn:resolver:help') {
+        if ($this->urn->raw_urn === 'urn:resolver:help') {
             // @TODO
             // return $this->operation_index();
         }
 
-        if (strpos($this->urn, 'urn:resolver:_explore') === 0) {
+        if (strpos($this->urn->raw_urn, 'urn:resolver:_explore') === 0) {
             return $this->operation_explore();
         }
 
-        if (strpos($this->urn, 'urn:resolver:_summary') === 0) {
+        if (strpos($this->urn->raw_urn, 'urn:resolver:_summary') === 0) {
             return $this->operation_summary();
         }
 
-        $this->http_status = 501; // 501 Not Implemented
+        $this->http_status = 501;
         $errors = [
             'status' => 501,
             'title' => 'Not Implemented'
@@ -850,11 +893,16 @@ class Router
 
     public function execute()
     {
+        $parsed_urn = new URNParserResolver($this->active_urn);
+        // var_dump($parsed_urn);
+        // die;
+
         // echo strpos($this->active_urn, 'urn:resolver:') ;
         // die($this->active_urn);
         $mode = 'default';
         if (strpos($this->active_urn, 'urn:resolver:') === 0) {
-            $urnr = new ResponseURNResolver($this, $this->active_urn);
+            // $urnr = new ResponseURNResolver($this, $this->active_urn);
+            $urnr = new ResponseURNResolver($this, $parsed_urn);
             if ($urnr->execute()) {
                 $data = $urnr->data;
                 $resp = new Response($this->config);
@@ -891,14 +939,19 @@ class Router
             $resolver_paths[$key] = $path;
         }
 
-        $urnr = new ResponseURNResolver($this, 'urn:resolver:_summary');
+        $parsed_urn = new URNParserResolver('urn:resolver:_summary');
+        // $parsed_urn = new URNParserResolver('urn:resolver:_summary');
+        // $urnr = new ResponseURNResolver($this, 'urn:resolver:_summary');
+        $urnr = new ResponseURNResolver($this, $parsed_urn);
         $urnr->execute();
 
         // var_dump($urnr->data['resolver_ops']);die;
         $welcome_ops = $urnr->data['resolver_ops'];
         // $welcome_ops->{'@type'} = '_:TODO';
 
-        // var_dump( $welcome_ops);die;
+        // var_dump($urnr);
+        // var_dump($welcome_ops);
+        // die;
 
         $result = [
             // '$schema' => 'https://jsonapi.org/schema',

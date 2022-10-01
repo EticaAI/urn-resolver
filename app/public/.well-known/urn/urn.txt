@@ -3,6 +3,7 @@
 urn:data:un:ocha:.urnr.json
 urn:data:us:edu.uga.itos:.urnr.json
 urn:doi:.urnr.json
+urn:example:.urnr.json
 urn:geo:.urnr.json
 urn:git:gitee:.urnr.json
 urn:git:github:.urnr.json

@@ -1,0 +1,29 @@
+$schema: urn:resolver:schema:urnr
+'@id': urn:example
+meta:
+  _comment: >
+    Informal URN. Used for testing.
+  spec: 
+    - https://www.rfc-editor.org/rfc/rfc8141
+    - https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
+  examples:
+    - in.urn:  'urn:example:_'
+      out.[0].iri: https://example.org/
+    - in.urn:  'urn:example:foo-bar-baz-qux?+CCResolve:cc=uk'
+      out.[0].iri: https://example.org/
+      _comment: https://www.rfc-editor.org/rfc/rfc8141#section-2.3.1
+    - in.urn:  'urn:example:weather?=op=map&lat=39.56&lon=-104.85&datetime=1969-07-21T02:56:15Z'
+      out.[0].iri: https://example.org/
+      _comment: https://www.rfc-editor.org/rfc/rfc8141#section-2.3.2
+
+    - in.urn:  'urn:example:weather?+CCResolve:cc=uk?=op=map&lat=39.56'
+      out.[0].iri: https://example.org/
+      _comment: RFC 8141 r-component + q-component + f-component
+  featured: true
+rules:
+  - in:
+      urn: "urn:example:(.*)"
+    out:
+      - iri: "https://example.org/{{ in[1] }}"
+
+# @TODO https://vocabulary.unocha.org/json/beta-v4/countries.json
