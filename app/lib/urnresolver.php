@@ -11,16 +11,61 @@ $global_conf = new Config();
 define("URNRESOLVER_BASE", $global_conf->base_iri);
 
 
+class CConst
+{
+    /**
+     * Content-Disposition: inline
+     *
+     * @see https://www.iana.org/assignments/cont-disp/cont-disp.xhtml
+     */
+    public const CC_INLINE = 1;
+
+    /**
+     * Content-Disposition: attachment; filename=''
+     *
+     * @see @see https://www.iana.org/assignments/cont-disp/cont-disp.xhtml
+     * @see https://www.rfc-editor.org/rfc/rfc2183
+     */
+    public const CC_ATTACHMENT = 2;
+
+    // @TODO maybe also "Content-Disposition: recipient-list" (?)
+    // https://www.rfc-editor.org/rfc/rfc5363
+}
+
 class Common
 {
-    public const EXT_TO_MEDIATYPE = [
-        '.csv' => 'text/csv; charset=utf-8',
-        '.json' => 'application/json; charset=utf-8',
-        '.jsonld' => 'application/ld+json; charset=utf-8',
-        '.tsv' => 'text/tab-separated-values; charset=utf-8',
-        '.txt' => 'text/plain; charset=utf-8',
-        '.hxl.csv' => 'text/csv; charset=utf-8',
-        '.hxl.tsv' => 'text/tab-separated-values; charset=utf-8',
+
+    /**
+     * @see https://www.iana.org/assignments/media-types/media-types.xhtml
+     * @see https://www.iana.org/assignments/cont-disp/cont-disp.xhtml
+     */
+    public const EXTMETA = [
+        '.csv' => [
+            'text/csv; charset=utf-8',
+            CConst::CC_ATTACHMENT
+        ],
+        '.json' => [
+            'application/json; charset=utf-8',
+            CConst::CC_INLINE
+        ],
+        // .jsonld: https://www.w3.org/TR/json-ld/#iana-considerations
+        '.jsonld' => [
+            'application/ld+json; charset=utf-8',
+            CConst::CC_INLINE
+        ],
+        '.tsv' => [
+            'text/tab-separated-values; charset=utf-8',
+            CConst::CC_ATTACHMENT
+        ],
+        '.txt' => ['text/plain; charset=utf-8',
+            CConst::CC_INLINE
+        ],
+        '.hxl.csv' => ['text/csv; charset=utf-8',
+            CConst::CC_ATTACHMENT
+        ],
+        '.hxl.tsv' => ['text/tab-separated-values; charset=utf-8',
+            CConst::CC_ATTACHMENT
+        ]
     ];
 
     public const EXT_TABULAR_DELIMITER = [
@@ -32,29 +77,12 @@ class Common
 
     // @TODO implement special format for
     //       415 Unsupported Media Type (RFC 7231)
+
+    // https://www.w3.org/TR/json-ld/#iana-considerations
 }
 
 // @TODO implement profiles https://www.w3.org/TR/dx-prof-conneg/
 
-// https://www.php-fig.org/psr/psr-12/
-
-function debug()
-{
-    $info = [];
-    foreach ($_SERVER as $key => $value) {
-        if (strpos($key, 'HTTP_') === 0) {
-            $chunks = explode('_', $key);
-            $header = '';
-            for ($i = 1; $y = sizeof($chunks) - 1, $i < $y; $i++) {
-                $header .= ucfirst(strtolower($chunks[$i])).'-';
-            }
-            $header .= ucfirst(strtolower($chunks[$i])).': '.$value;
-            array_push($info, $header);
-            // echo $header."\n";
-        }
-    }
-    return $info;
-}
 
 /**
  * Pretty print JSON (2 spaces and newline)
@@ -73,6 +101,33 @@ function to_json($data)
         return str_repeat(' ', strlen($m[0]) / 2);
     }, $json_string_4spaces);
     return $json_string . "\n";
+}
+
+class App
+{
+    public Config $config;
+    public Router $router;
+
+    public function __construct()
+    {
+        $this->config = new Config();
+        $this->router = new Router($this->config);
+    }
+
+    public function execute_web()
+    {
+        if ($this->router->is_success()) {
+            $this->router->execute();
+        } else {
+            $this->router->execute_welcome();
+        }
+        $this->router->execute();
+    }
+
+    public function execute_cli()
+    {
+        throw new \Exception('CLI not implemented... yet');
+    }
 }
 
 class Config
@@ -111,7 +166,11 @@ class Config
             return $variable;
         }
 
-        $variable = str_replace('{{ urnresolver }}', $this->global_conf['base_iri'], $variable);
+        $variable = str_replace(
+            '{{ urnresolver }}',
+            $this->global_conf['base_iri'],
+            $variable
+        );
 
         // @TODO implement dot notation
         // $all_options = [];
@@ -209,16 +268,8 @@ class Response
             '@id' => $base,
             'data' => $data,
             'meta' => [
-                // '@type' => 'schema:Message',
-                // 'schema:name' => 'URN Resolver',
-                // 'schema:dateCreated' => date("c"),
                 'datetime' => date("c"),
                 'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE . '/' . $base
-                // // 'schema:mainEntityOfPage' => 'https://github.com/EticaAI/urn-resolver',
-                // "schema:potentialAction" => [
-                //     "schema:name" => "uptime",
-                //     "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
-                // ]
             ]
           ];
 
@@ -465,7 +516,7 @@ class URNParserResolver extends URNParser
         if (!empty($this->q_component_parts)) {
             if (!empty($this->q_component_parts['u2709'])) {
                 $this->file_extension = $this->q_component_parts['u2709'];
-                $this->media_type = Common::EXT_TO_MEDIATYPE[$this->file_extension];
+                $this->media_type = Common::EXTMETA[$this->file_extension][0];
             }
         }
     }
@@ -593,11 +644,11 @@ class ResponseURNResolver
             return $this->operation_ping();
         }
 
-        if ($this->urn->raw_urn === 'urn:resolver:ping?u2709=.txt') {
+        if ($this->urn->raw_urn === 'urn:resolver:ping?=u2709=.txt') {
             return $this->operation_ping('txt');
         }
 
-        if ($this->urn->raw_urn === 'urn:resolver:ping?u2709=.tsv') {
+        if ($this->urn->raw_urn === 'urn:resolver:ping?=u2709=.tsv') {
             return $this->operation_ping('tsv');
         }
 
