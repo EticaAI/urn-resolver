@@ -14,6 +14,13 @@ $global_conf = new Config();
 define("URNRESOLVER_BASE", $global_conf->base_iri);
 
 
+/**
+ * Constant groups
+ *
+ * @TODO eventually rewrite this as PHP Enums when we drop support for PHP 7.x
+ *       Alternative: maybe https://stitcher.io/blog/enums-without-enums
+ *
+ */
 class CConst
 {
     /**
@@ -201,6 +208,51 @@ class Config
     }
 }
 
+
+/**
+ * Incomplete list of HTTP error messages.
+ */
+final class HTTPStatus
+{
+    public const C200 = 'OK';
+    public const C300 = 'Multiple Choices';
+    public const C301 = 'Moved Permanently';
+    public const C302 = 'Found';
+    public const C303 = 'See Other';
+    public const C307 = 'Temporary Redirect';
+    public const C308 = 'Permanent Redirect'; // RFC 7538
+    public const C400 = 'Bad Request';
+    public const C404 = 'Not Found';
+    public const C405 = 'Method Not Allowed';
+    public const C415 = 'Unsupported Media Type'; // RFC 7231
+    public const C500 = 'Internal Server Error';
+    public const C501 = 'Not Implemented';
+    public const C503 = 'Service Unavailable';
+
+    public static function get_code(int $numeric_code)
+    {
+        $cconst = "C"  . (string) $numeric_code;
+        return self::$$cconst;
+    }
+
+    public static function get_message(int $numeric_code)
+    {
+        return self::get_code($numeric_code);
+    }
+
+    public static function is_error($const_code)
+    {
+        return !in_array($const_code, [
+            self::C200,
+            self::C300,
+            self::C301,
+            self::C302,
+            self::C303,
+            self::C307
+        ]);
+    }
+}
+
 class Output
 {
     public $formater;
@@ -234,6 +286,40 @@ class Output
         echo to_json($out_json);
     }
 
+    private function _print_jsonld_v2()
+    {
+        // $full_iri = URNRESOLVER_BASE . '/' . $base;
+        $full_iri = URNRESOLVER_BASE . '/' . $this->a_id;
+
+        $templated = [
+            '$schema' => URNRESOLVER_BASE . '/' . $this->s_schema,
+            '@context' => URNRESOLVER_BASE . '/' . $this->a_context,
+            '@id' => $this->a_id,
+            'data' => null,
+            'error' => null,
+            'meta' => [
+                'datetime' => date("c"),
+                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',
+                //'json-ld' => 'https://json-ld.org/playground/#json-ld=' . $full_iri
+            ]
+          ];
+        if (!empty($this->error)) {
+            unset($templated['data']);
+            $templated['error'] = $this->error;
+            array_push($templated['meta'], [
+                'urnresolver-issues' => 'https://github.com/EticaAI/urn-resolver/issues'
+            ]);
+        } else {
+            unset($templated['error']);
+            $templated['data'] = $this->data;
+            array_push($templated['meta'], [
+                'json-ld' => 'https://json-ld.org/playground/#json-ld=' . $full_iri
+            ]);
+        }
+
+        echo to_json($templated);
+    }
+
     private function _print_tabular()
     {
         $out_lines = !empty($this->data) ? $this->data : $this->error;
@@ -247,7 +333,7 @@ class Output
         // fclose($out);
     }
 
-    public function set_metadata(?array $meta)
+    public function set_metadata(array $meta = null)
     {
         if (!empty($meta)) {
             foreach ($meta as $key => $value) {
@@ -262,6 +348,7 @@ class Output
             return $this->_print_tabular();
         } elseif (!$this->formater->is_http_redirect()) {
             return $this->_print_jsonld();
+            // return $this->_print_jsonld_v2();
         }
     }
 }
@@ -417,6 +504,7 @@ class Response
 
         if ($this->outf->is_tabular()) {
             $output = new Output($this->outf, $data);
+            $output->set_metadata($meta=[]);
             $output->print_result();
             die;
         }

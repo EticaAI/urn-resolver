@@ -46,7 +46,8 @@ The handcrafted rules at [resolvers](resolvers/) are converted to JSON and rsync
 
 ### How to run local node
 
-The current implementation uses PHP. Tested with 7.4 and 8.1.
+The current implementation uses PHP. Requires PHP >= 8.1
+(no special dependencies, just rsync the files).
 
 ```bash
 # Get a copy
