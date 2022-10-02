@@ -1,5 +1,8 @@
 <?php
 
+// @TODO maybe also explain how to add urn: as clicable protocol at leas on
+//       linux? See https://unix.stackexchange.com/questions/497146/create-a-custom-url-protocol-handler
+
 declare(strict_types=1);
 
 namespace URNResolver;
@@ -120,26 +123,6 @@ class Common
 
 // @TODO implement profiles https://www.w3.org/TR/dx-prof-conneg/
 
-
-/**
- * Pretty print JSON (2 spaces and newline)
- *
- * @param     object    $data
- * @return    string
- */
-function to_json($data)
-{
-    $json_string_4spaces = json_encode(
-        $data,
-        JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-    );
-    // https://stackoverflow.com/a/31689850/894546
-    $json_string = preg_replace_callback('/^ +/m', function ($m) {
-        return str_repeat(' ', strlen($m[0]) / 2);
-    }, $json_string_4spaces);
-    return $json_string . "\n";
-}
-
 class App
 {
     public Config $config;
@@ -223,6 +206,13 @@ class Output
     public $formater;
     public $data;
     public $error;
+
+    // private string $_a_schema = URNRESOLVER_BASE . '/urn:resolver:schema:api:base';
+    private string $s_schema = 'urn:resolver:schema:api:base';
+    private string $a_context = 'urn:resolver:context:api:base';
+    private string $a_id = 'urn:x-error:null';
+    private string $datetime;
+
     public function __construct(
         OutputFormatter $formater,
         $data = null,
@@ -231,6 +221,48 @@ class Output
         $this->formater = $formater;
         $this->data = $data;
         $this->error = $error;
+
+        $this->datetime = date("c");
+    }
+
+    private function _print_jsonld()
+    {
+        // @TODO move responsability to here from how to write the entire
+        //       JSON-like response instead of wait for already be preapred
+        //       before this part.
+        $out_json = !empty($this->data) ? $this->data : $this->error;
+        echo to_json($out_json);
+    }
+
+    private function _print_tabular()
+    {
+        $out_lines = !empty($this->data) ? $this->data : $this->error;
+        // $delimiter = "\t";
+        $delimiter = $this->formater->get_tabular_delimiter();
+        to_csv($out_lines, $delimiter);
+        // $out = fopen('php://output', 'w');
+        // foreach ($out_lines as $line) {
+        //     fputcsv($out, $line, $delimiter);
+        // }
+        // fclose($out);
+    }
+
+    public function set_metadata(?array $meta)
+    {
+        if (!empty($meta)) {
+            foreach ($meta as $key => $value) {
+                $this->{$key} = $value;
+            }
+        }
+    }
+
+    public function print_result()
+    {
+        if ($this->formater->is_tabular()) {
+            return $this->_print_tabular();
+        } elseif (!$this->formater->is_http_redirect()) {
+            return $this->_print_jsonld();
+        }
     }
 }
 
@@ -375,9 +407,19 @@ class Response
         //     die;
         // }
 
+        // var_dump($this->outf->get_http_mediatype());die;
+
+
         // header('Content-Type: application/json; charset=utf-8');
-        header("Content-type: application/json; charset=utf-8");
+        // header("Content-type: application/json; charset=utf-8");
+        header("Content-type: {$this->outf->get_http_mediatype()}");
         // header("Access-Control-Allow-Origin: *");
+
+        if ($this->outf->is_tabular()) {
+            $output = new Output($this->outf, $data);
+            $output->print_result();
+            die;
+        }
 
         $result = [
             // '$schema' => 'https://jsonapi.org/schema',
@@ -394,9 +436,13 @@ class Response
             ]
           ];
 
+        $output = new Output($this->outf, $result);
+        $output->print_result();
+        die;
+
         // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        echo to_json($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        die();
+        // echo to_json($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        // die();
     }
 
     public function execute_output_4xx(
@@ -809,41 +855,25 @@ class ResponseURNResolver
         if ($this->urn->get_levenshtein('urn:resolver:ping') === 0) {
             return $this->operation_ping();
         }
-        if ($this->urn->raw_urn === 'urn:resolver:ping') {
-            return $this->operation_ping();
-        }
 
-        if ($this->urn->raw_urn === 'urn:resolver:ping?=u2709=.txt') {
-            return $this->operation_ping('.txt');
-        }
-
-        if ($this->urn->raw_urn === 'urn:resolver:ping?=u2709=.tsv') {
-            return $this->operation_ping('.tsv');
-        }
-
-        // if (in_array($this->urn, [
-        //     // 'urn:resolver:ping?✉️=txt',
-        //     // 'urn:resolver:ping?%E2%9C%89=txt',
-        //     'urn:resolver:ping?u2709=txt',
-        //     'urn:resolver:ping?u2709=tsv',
-        //     ])) {
-        //     return $this->operation_ping($envelope='txt');
-        // }
-
-        if ($this->urn->raw_urn === 'urn:resolver:index') {
+        // if ($this->urn->raw_urn === 'urn:resolver:index') {
+        if ($this->urn->get_levenshtein('urn:resolver:index') === 0) {
             return $this->operation_index();
         }
 
-        if ($this->urn->raw_urn === 'urn:resolver:help') {
+        if ($this->urn->get_levenshtein('urn:resolver:help') === 0) {
+            // if ($this->urn->raw_urn === 'urn:resolver:help') {
             // @TODO
             // return $this->operation_index();
         }
 
-        if (strpos($this->urn->raw_urn, 'urn:resolver:_explore') === 0) {
+        if ($this->urn->get_levenshtein('urn:resolver:_explore') === 0) {
+            // if (strpos($this->urn->raw_urn, 'urn:resolver:_explore') === 0) {
             return $this->operation_explore();
         }
 
-        if (strpos($this->urn->raw_urn, 'urn:resolver:_summary') === 0) {
+        if ($this->urn->get_levenshtein('urn:resolver:_summary') === 0) {
+            // if (strpos($this->urn->raw_urn, 'urn:resolver:_summary') === 0) {
             return $this->operation_summary();
         }
 
@@ -1148,13 +1178,20 @@ class Router
                 $outf = new OutputFormatter(
                     // $urnr->urn->raw_urn,
                     $this->urnparsed->urn_like_id,
-                    $parsed_urn->file_extension
+                    $parsed_urn->file_extension ?? '.jsonld'
                 );
+
+                // var_dump('oi', $urnr->data_tabular);die;
+
+                $outdata = empty($urnr->data_tabular) ? $urnr->data : $urnr->data_tabular;
+
+                // var_dump($outdata);die;
 
                 // if ($urnr->is_tabular) {
                 // }
                 $resp = new Response($this->config, $outf);
-                $resp->execute_output_2xx($this->active_uri, $data);
+                // $resp->execute_output_2xx($this->active_uri, $data);
+                $resp->execute_output_2xx($this->active_uri, $outdata);
             } else {
                 $outf = new OutputFormatter($this->urnparsed->urn_like_id, '.jsonld');
                 $resp = new Response($this->config, $outf);
@@ -1240,4 +1277,46 @@ class Router
 
         return isset($this->active_urn_to_uri) and !empty($this->active_urn_to_uri);
     }
+}
+
+
+/**
+ * Pretty print JSON (2 spaces and newline)
+ *
+ * @param     array    $data      Array of Arrays
+ * @param     string   $delimiter Delimiter
+ * @param     string   $outfile   Where to write (defaults to print)
+ * @return    string
+ */
+function to_csv(
+    array $data,
+    string $delimiter="\t",
+    string $outfile='php://output'
+) {
+    // $out = fopen('php://output', 'w');
+    $out = fopen($outfile, 'w');
+    foreach ($data as $line) {
+        fputcsv($out, $line, $delimiter);
+    }
+    fclose($out);
+}
+
+
+/**
+ * Pretty print JSON (2 spaces and newline)
+ *
+ * @param     object    $data
+ * @return    string
+ */
+function to_json($data)
+{
+    $json_string_4spaces = json_encode(
+        $data,
+        JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+    );
+    // https://stackoverflow.com/a/31689850/894546
+    $json_string = preg_replace_callback('/^ +/m', function ($m) {
+        return str_repeat(' ', strlen($m[0]) / 2);
+    }, $json_string_4spaces);
+    return $json_string . "\n";
 }
