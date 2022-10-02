@@ -99,7 +99,7 @@ class Common
         // text/x-shellscript
         // @see https://wiki.debian.org/ShellScript
         // @see https://cloudinit.readthedocs.io/en/latest/topics/format.html
-        '.bash.txt' => ['text/x-shellscript; charset=utf-8',
+        '.sh.txt' => ['text/x-shellscript; charset=utf-8',
             CConst::CC_INLINE,
             CConst::FC_LIKE_TXT
         ]
@@ -213,6 +213,63 @@ class Config
         // $all_options = [];
 
         return $variable;
+    }
+}
+
+class Output
+{
+    public $formater;
+    public $data;
+    public $error;
+    public function __construct(
+        OutputFormatter $formater,
+        $data = null,
+        $error = null
+    ) {
+        $this->formater = $formater;
+        $this->data = $data;
+        $this->error = $error;
+    }
+}
+
+class OutputFormatter
+{
+    public string $type;
+
+    public function __construct(string $id, $type = '.jsonld')
+    {
+        $this->id = $id; // URN, IRI
+        $this->type = $type;
+    }
+
+    public function get_http_content_disposition()
+    {
+        $extmeta = Common::EXTMETA[$this->type];
+        if ($extmeta === CConst::CC_INLINE) {
+            return 'inline';
+        }
+
+        if ($extmeta === CConst::CC_ATTACHMENT) {
+            $filename = $this->id . $this->type;
+            // Not ideal, but on failed scenarios avoid generate bad filenames
+            $filename = str_replace('http://', '', $filename);
+            $filename = str_replace('https://', '', $filename);
+            $filename = str_replace('/', '__', $filename);
+            $filename = str_replace('"', '', $filename);
+            $filename = str_replace("'", '', $filename);
+            return "attachment; filename='$filename'";
+        }
+
+        throw new \Exception("Syntax error");
+    }
+    public function get_tabular_delimiter()
+    {
+        return Common::EXT_TABULAR_DELIMITER[$this->type];
+    }
+
+    public function is_tabular()
+    {
+        return !empty(Common::EXT_TABULAR_DELIMITER[$this->type]);
     }
 }
 
