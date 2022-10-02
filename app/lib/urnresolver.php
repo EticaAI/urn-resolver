@@ -232,7 +232,8 @@ final class HTTPStatus
     public static function get_code(int $numeric_code)
     {
         $cconst = "C"  . (string) $numeric_code;
-        return self::$$cconst;
+        // return self::$cconst;
+        return constant('self::'. $cconst);
     }
 
     public static function get_message(int $numeric_code)
@@ -258,12 +259,17 @@ class Output
     public $formater;
     public $data;
     public $error;
+    public bool $is_error = false;
 
     // private string $_a_schema = URNRESOLVER_BASE . '/urn:resolver:schema:api:base';
     private string $s_schema = 'urn:resolver:schema:api:base';
     private string $a_context = 'urn:resolver:context:api:base';
     private string $a_id = 'urn:x-error:null';
+    private string $full_iri = URNRESOLVER_BASE . '/urn:x-error:null';
     private string $datetime;
+    private ?array $error_seeAlso;
+    private ?int $error_status;
+    private ?string $error_title;
 
     public function __construct(
         OutputFormatter $formater,
@@ -273,6 +279,9 @@ class Output
         $this->formater = $formater;
         $this->data = $data;
         $this->error = $error;
+        if (!empty($this->error)) {
+            $this->is_error = true;
+        }
 
         $this->datetime = date("c");
     }
@@ -289,7 +298,6 @@ class Output
     private function _print_jsonld_v2()
     {
         // $full_iri = URNRESOLVER_BASE . '/' . $base;
-        $full_iri = URNRESOLVER_BASE . '/' . $this->a_id;
 
         $templated = [
             '$schema' => URNRESOLVER_BASE . '/' . $this->s_schema,
@@ -306,14 +314,14 @@ class Output
         if (!empty($this->error)) {
             unset($templated['data']);
             $templated['error'] = $this->error;
-            array_push($templated['meta'], [
+            $templated['meta'] = array_merge($templated['meta'], [
                 'urnresolver-issues' => 'https://github.com/EticaAI/urn-resolver/issues'
             ]);
         } else {
             unset($templated['error']);
             $templated['data'] = $this->data;
-            array_push($templated['meta'], [
-                'json-ld' => 'https://json-ld.org/playground/#json-ld=' . $full_iri
+            $templated['meta'] = array_merge($templated['meta'], [
+                'json-ld' => 'https://json-ld.org/playground/#json-ld=' . $this->full_iri
             ]);
         }
 
@@ -322,7 +330,17 @@ class Output
 
     private function _print_tabular()
     {
-        $out_lines = !empty($this->data) ? $this->data : $this->error;
+        if ($this->is_error) {
+            $out_lines = to_error_tabular(
+                $this->a_id,
+                $this->error_status,
+                $this->error_title,
+                ''
+            );
+        } else {
+            $out_lines = !empty($this->data) ? $this->data : $this->error;
+        }
+
         // $delimiter = "\t";
         $delimiter = $this->formater->get_tabular_delimiter();
         to_csv($out_lines, $delimiter);
@@ -335,6 +353,7 @@ class Output
 
     public function set_metadata(array $meta = null)
     {
+        $this->error_seeAlso = ['urn:resolver:index'];
         if (!empty($meta)) {
             foreach ($meta as $key => $value) {
                 $this->{$key} = $value;
@@ -345,10 +364,12 @@ class Output
     public function print_result()
     {
         if ($this->formater->is_tabular()) {
+            // echo to_json($this);
+            // die;
             return $this->_print_tabular();
         } elseif (!$this->formater->is_http_redirect()) {
-            return $this->_print_jsonld();
-            // return $this->_print_jsonld_v2();
+            // return $this->_print_jsonld();
+            return $this->_print_jsonld_v2();
         }
     }
 }
@@ -480,110 +501,92 @@ class Response
     public function execute_output_2xx(
         string $base,
         array $data = null,
-        // ?array $data_tabular = null,
-        // ?string $data_tabular_delimiter = "\t",
-        // array $meta = [],
         int $http_status_code = 200
     ) {
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
-
-        // if (!empty($data_tabular)) {
-        //     $data_tabular_delimiter = "\t";
-        //     $this->_output_tabular($data, $data_tabular_delimiter);
-        //     die;
-        // }
-
-        // var_dump($this->outf->get_http_mediatype());die;
-
-
-        // header('Content-Type: application/json; charset=utf-8');
-        // header("Content-type: application/json; charset=utf-8");
         header("Content-type: {$this->outf->get_http_mediatype()}");
         // header("Access-Control-Allow-Origin: *");
 
-        if ($this->outf->is_tabular()) {
-            $output = new Output($this->outf, $data);
-            $output->set_metadata($meta=[]);
-            $output->print_result();
-            die;
-        }
-
-        $result = [
-            // '$schema' => 'https://jsonapi.org/schema',
-            // @TODO make this also an URN (with htaccess rewirte for performance reason)
-            '$schema' => URNRESOLVER_BASE . '/urn:resolver:schema:api:base',
-            // '$id' => $base,
-            // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
-            '@context' => URNRESOLVER_BASE . '/urn:resolver:context:api:base',
-            '@id' => $base,
-            'data' => $data,
-            'meta' => [
-                'datetime' => date("c"),
-                'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE . '/' . $base
-            ]
-          ];
-
-        $output = new Output($this->outf, $result);
+        $output = new Output($this->outf, $data);
+        $output->set_metadata([
+            'a_id' => $base,
+            'full_iri' => URNRESOLVER_BASE . '/' . $base
+        ]);
         $output->print_result();
         die;
 
-        // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        // echo to_json($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        // die();
+        // if ($this->outf->is_tabular()) {
+        //     $output = new Output($this->outf, $data);
+        //     $output->set_metadata([
+        //         'a_id' => $base,
+        //         'full_iri' => URNRESOLVER_BASE . '/' . $base
+        //     ]);
+        //     $output->print_result();
+        //     die;
+        // }
+
+        // $result = [
+        //     // '$schema' => 'https://jsonapi.org/schema',
+        //     // @TODO make this also an URN (with htaccess rewirte for performance reason)
+        //     '$schema' => URNRESOLVER_BASE . '/urn:resolver:schema:api:base',
+        //     // '$id' => $base,
+        //     // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
+        //     '@context' => URNRESOLVER_BASE . '/urn:resolver:context:api:base',
+        //     '@id' => $base,
+        //     'data' => $data,
+        //     'meta' => [
+        //         'datetime' => date("c"),
+        //         'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE . '/' . $base
+        //     ]
+        //   ];
+
+        // // $output = new Output($this->outf, $result);
+        // $output = new Output($this->outf, $data);
+        // $output->set_metadata([
+        //     'a_id' => $base,
+        //     'full_iri' => URNRESOLVER_BASE . '/' . $base
+        // ]);
+        // $output->print_result();
+        // die;
     }
 
     public function execute_output_4xx(
         string $base,
         // string $data,
         int $http_status_code = 404,
-        string $http_status_msg = 'Not found'
+        // string $http_status_msg = 'Not found'
     ) {
         $this->_set_options($this->global_conf['Cache-Control']['default404']);
 
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
         // header('Content-Type: application/json; charset=utf-8');
-        header("Content-type: application/json; charset=utf-8");
+        // header("Content-type: application/json; charset=utf-8");
+        header("Content-type: {$this->outf->get_http_mediatype()}");
         // header("Access-Control-Allow-Origin: *");
 
-        $result = [
-            // '$schema' => 'https://jsonapi.org/schema',
-            // @TODO make this also an URN (with htaccess rewirte for performance reason)
-            '$schema' => URNRESOLVER_BASE . '/urn:resolver:schema:api:base',
-            // '$id' => $base,
-            // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
-            '@context' => URNRESOLVER_BASE . '/urn:resolver:context:api:base',
-            '@id' => $base,
-            'error' => [
-                'status' => $http_status_code,
-                'title' => $http_status_msg,
-                'seeAlso' => ['urn:resolver:index'],
-            ],
-            'meta' => [
-                'datetime' => date("c"),
-                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',
-                'urn:resolver:index' => "{$this->global_conf['base_iri']}/urn:resolver:index",
-                // '@type' => 'schema:Message',
-                // 'schema:dateCreated' => date("c"),
-                // "schema:potentialAction" => [[
-                //     "schema:name" => "urn:resolver:index",
-                //     "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
-                // ]]
-            ]
-          ];
+        // @TODO remove this part. Output already pre-parse errors
+        $error = [
+            'status' => $http_status_code,
+            'title' => HTTPStatus::get_message($http_status_code),
+            'seeAlso' => ['urn:resolver:index'],
+        ];
 
-        // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        echo to_json($result);
-        die();
+        $output = new Output($this->outf, null, $error);
+        $output->set_metadata([
+            'a_id' => $base,
+            'full_iri' => URNRESOLVER_BASE . '/' . $base,
+            'error_status' => $http_status_code,
+            'error_title' => HTTPStatus::get_message($http_status_code),
+        ]);
+        $output->print_result();
+        die;
     }
 
     public function execute_output_5xx(
         string $base,
-        // string $data,
         int $http_status_code = 501,
-        // string $http_status_msg = 'Internal Server Error',
-        string $http_status_msg = 'Not Implemented',
         string $mode = null
     ) {
         $mode = $mode ?? "default{$http_status_code}";
@@ -591,43 +594,24 @@ class Response
 
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
-        // header('Content-Type: application/json; charset=utf-8');
-        header("Content-type: application/json; charset=utf-8");
-        // header("Access-Control-Allow-Origin: *");
+        header("Content-type: {$this->outf->get_http_mediatype()}");
 
-        $result = [
-            // '$schema' => 'https://jsonapi.org/schema',
-            // @TODO make this also an URN (with htaccess rewirte for performance reason)
-            '$schema' => URNRESOLVER_BASE . '/urn:resolver:schema:api:base',
-            // '$id' => $base,
-            // '@context' => 'https://urn.etica.ai/urnresolver-context.jsonld',
-            '@context' => URNRESOLVER_BASE . '/urn:resolver:context:api:base',
-            '@id' => $base,
-            'error' => [
-                'status' => $http_status_code,
-                'title' => $http_status_msg,
-                'seeAlso' => ['urn:resolver:index'],
-            ],
-            'meta' => [
-                'datetime' => date("c"),
-                'uptime' => 'https://stats.uptimerobot.com/jYDZlFY8jq',
-                'urnresolver-issues' => 'https://github.com/EticaAI/urn-resolver/issues',
-                // '@type' => 'schema:Message',
-                // 'schema:dateCreated' => date("c"),
-                // 'json-ld' => 'https://json-ld.org/playground/#json-ld=' . URNRESOLVER_BASE,
-                // "schema:potentialAction" => [[
-                //     "schema:name" => "uptime",
-                //     "schema:url" => "https://stats.uptimerobot.com/jYDZlFY8jq"
-                // ],[
-                //     "schema:name" => "urn:resolver:index",
-                //     "schema:url" => "{$this->global_conf['base_iri']}/urn:resolver:index"
-                // ]]
-            ]
-          ];
+        // @TODO remove this part. Output already pre-parse errors
+        $error = [
+            'status' => $http_status_code,
+            'title' => HTTPStatus::get_message($http_status_code),
+            'seeAlso' => ['urn:resolver:index'],
+        ];
 
-        // echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        echo to_json($result);
-        die();
+        $output = new Output($this->outf, null, $error);
+        $output->set_metadata([
+            'a_id' => $base,
+            'full_iri' => URNRESOLVER_BASE . '/' . $base,
+            'error_status' => $http_status_code,
+            'error_title' => HTTPStatus::get_message($http_status_code),
+        ]);
+        $output->print_result();
+        die;
     }
 
     public function execute_redirect(
@@ -993,7 +977,7 @@ class ResponseURNResolver
         $resolver_paths = [];
 
         $this->data = [
-            'json-ld' => "https://json-ld.org/playground/#json-ld={$this->router->config->base_iri}/{$this->urn}",
+            // 'json-ld' => "https://json-ld.org/playground/#json-ld={$this->urn->raw_urn}",
             'openapi' => "https://editor.swagger.io/?url=https://raw.githubusercontent.com/EticaAI/urn-resolver/main/openapi.yml",
         ];
 
@@ -1273,7 +1257,8 @@ class Router
 
                 $outdata = empty($urnr->data_tabular) ? $urnr->data : $urnr->data_tabular;
 
-                // var_dump($outdata);die;
+                // var_dump($outdata);
+                // die;
 
                 // if ($urnr->is_tabular) {
                 // }
@@ -1281,7 +1266,10 @@ class Router
                 // $resp->execute_output_2xx($this->active_uri, $data);
                 $resp->execute_output_2xx($this->active_uri, $outdata);
             } else {
-                $outf = new OutputFormatter($this->urnparsed->urn_like_id, '.jsonld');
+                $outf = new OutputFormatter(
+                    $this->urnparsed->urn_like_id,
+                    $parsed_urn->file_extension ?? '.jsonld'
+                );
                 $resp = new Response($this->config, $outf);
                 $resp->execute_output_5xx($this->active_uri);
             }
@@ -1387,6 +1375,32 @@ function to_csv(
         fputcsv($out, $line, $delimiter);
     }
     fclose($out);
+}
+
+function to_error_tabular(
+    string $id,
+    string|int $status_code,
+    string $status_title,
+    string|array|object $meta = null,
+) {
+    $data = [];
+    $date = date("c");
+    array_push($data, [
+        '#item+request+id',
+        '#date',
+        '#status+code',
+        '#status+title',
+        '#meta',
+    ]);
+    array_push($data, [
+        $id,
+        $date,
+        $status_code,
+        $status_title,
+        (empty($meta) ? '' : json_encode($meta))
+    ]);
+
+    return $data;
 }
 
 

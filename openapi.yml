@@ -4,7 +4,7 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: URN Resolver
+  title: URN Resolver (very early draft)
   description: URN Resolver
 paths:
   /:
