@@ -144,11 +144,13 @@ class App
 {
     public Config $config;
     public Router $router;
+    public ?URNParserResolver $urnparsed = null;
 
     public function __construct()
     {
         $this->config = new Config();
         $this->router = new Router($this->config);
+        $this->urnparsed = $this->router->urnparsed;
     }
 
     public function execute_web()
@@ -236,7 +238,7 @@ class OutputFormatter
 {
     public string $type;
 
-    public function __construct(string $id, $type = '.jsonld')
+    public function __construct(string $id, ?string $type = '.jsonld')
     {
         $this->id = $id; // URN, IRI
         $this->type = $type;
@@ -262,6 +264,13 @@ class OutputFormatter
 
         throw new \Exception("Syntax error");
     }
+
+    public function get_http_mediatype()
+    {
+        $extmeta = Common::EXTMETA[$this->type];
+        return $extmeta[0];
+    }
+
     public function get_tabular_delimiter()
     {
         return Common::EXT_TABULAR_DELIMITER[$this->type];
@@ -271,11 +280,17 @@ class OutputFormatter
     {
         return !empty(Common::EXT_TABULAR_DELIMITER[$this->type]);
     }
+
+    public function is_http_redirect()
+    {
+        return is_null($this->type);
+    }
 }
 
 class Response
 {
     private $global_conf;
+    private OutputFormatter $outf;
     private string $_cc_prefix = 'public';
     private int $max_age = 0;
     private int $s_maxage = 0;
@@ -299,10 +314,12 @@ class Response
 
     public function __construct(
         Config $config,
+        OutputFormatter $outf,
         string $mode = 'default',
         array $meta = null
     ) {
         $this->global_conf = $config->global_conf;
+        $this->outf = $outf;
         $cc_active = $this->global_conf['Cache-Control'][$mode];
         $this->_set_options($cc_active);
 
@@ -604,7 +621,14 @@ class URNParser
 
 class URNParserResolver extends URNParser
 {
-    public ?string $file_extension;
+    /**
+     * Some sort of ID for URN.
+     * If not an URN at all (for example http URLs)
+     * It will start with urn:x-http: / urn:x-https:
+     */
+    public string $urn_like_id;
+
+    public ?string $file_extension = null;
     public ?string $media_type;
     public ?int $content_disposition;
     public ?int $container_like = null;
@@ -613,13 +637,7 @@ class URNParserResolver extends URNParser
     public function __construct(string $urn)
     {
         parent::__construct($urn);
-        // if ($this->nid === 'resolver') {
-        //     if (!empty($this->query_parts['u2709'])) {
-        //         $this->file_extension = $this->query_parts['u2709'];
-        //         $this->media_type = Common::EXT_TO_MEDIATYPE[$this->file_extension];
-        //     }
-        // }
-        // var_dump($this);die;
+
         if (!empty($this->q_component_parts)) {
             if (!empty($this->q_component_parts['u2709'])) {
                 $this->file_extension = $this->q_component_parts['u2709'];
@@ -633,6 +651,21 @@ class URNParserResolver extends URNParser
         // var_dump($this->file_extension, Common::EXTMETA[$this->file_extension]);
         if ($this->container_like === CConst::FC_LIKE_CSV) {
             $this->tabular_delimiter = Common::EXT_TABULAR_DELIMITER[$this->file_extension];
+        }
+
+        if ($this->scheme === 'urn') {
+            $this->urn_like_id = 'urn:' . $this->path;
+        } else {
+            $scheme = (string) $this->scheme;
+            $host = 'void';
+            if (!empty($this->host)) {
+                $host = implode('.', array_reverse(explode('.', $this->host)));
+            }
+            $path = '';
+            if (!empty($this->path)) {
+                $path = str_replace(['/', '\\'], '__', $this->path);
+            }
+            $this->urn_like_id = "urn:x-{$scheme}:{$host}{$path}";
         }
     }
 
@@ -924,6 +957,7 @@ class ResponseURNResolver
 class Router
 {
     public Config $config;
+    public ?URNParserResolver $urnparsed = null;
     public array $resolvers = array();
     private $active_base;
     private $active_uri;
@@ -947,6 +981,7 @@ class Router
             $this->_is_home = true;
         } elseif (strpos($this->active_uri, 'urn:') == 0) {
             $this->active_urn = $this->active_uri;
+            $this->urnparsed = new URNParserResolver($this->active_urn);
         }
         // $this->resolvers = [];
         $this->_init_rules();
@@ -1097,7 +1132,8 @@ class Router
 
     public function execute()
     {
-        $parsed_urn = new URNParserResolver($this->active_urn);
+        // $parsed_urn = new URNParserResolver($this->active_urn);
+        $parsed_urn = $this->urnparsed;
         // var_dump($parsed_urn);
         // die;
 
@@ -1109,17 +1145,25 @@ class Router
             $urnr = new ResponseURNResolver($this, $parsed_urn);
             if ($urnr->execute()) {
                 $data = $urnr->data;
+                $outf = new OutputFormatter(
+                    // $urnr->urn->raw_urn,
+                    $this->urnparsed->urn_like_id,
+                    $parsed_urn->file_extension
+                );
+
                 // if ($urnr->is_tabular) {
                 // }
-                $resp = new Response($this->config);
+                $resp = new Response($this->config, $outf);
                 $resp->execute_output_2xx($this->active_uri, $data);
             } else {
-                $resp = new Response($this->config);
+                $outf = new OutputFormatter($this->urnparsed->urn_like_id, '.jsonld');
+                $resp = new Response($this->config, $outf);
                 $resp->execute_output_5xx($this->active_uri);
             }
         } else {
             // die($mode);
-            $resp = new Response($this->config, $mode);
+            $outf = new OutputFormatter($this->urnparsed->urn_like_id);
+            $resp = new Response($this->config, $outf, $mode);
             $target = $this->config->transform_if_necessary($this->active_urn_to_uri);
             $resp->execute_redirect($target, $this->active_urn_to_httpstatus);
         }
@@ -1129,7 +1173,8 @@ class Router
     {
         if (!$this->_is_home && $this->_is_error) {
             $mode = 'internal';
-            $resp = new Response($this->config, $mode);
+            $outf = new OutputFormatter('');
+            $resp = new Response($this->config, $outf, $mode);
             $resp->execute_output_4xx($this->active_base, 404);
             die;
         }
