@@ -30,11 +30,34 @@ class CConst
 
     // @TODO maybe also "Content-Disposition: recipient-list" (?)
     // https://www.rfc-editor.org/rfc/rfc5363
+    // public const CC_RECIPENTLIST = -1;
+
+    /**
+     * No file output; redirect
+     */
+    public const FC_LIKE_REDIRCT = 1;
+
+    /**
+     * File output content like JSON
+     */
+    public const FC_LIKE_JSON = 11;
+
+    /**
+     * File output content like CSV (any tabular output)
+     */
+    public const FC_LIKE_CSV = 12;
+
+    /**
+     * File output content generic TXT
+     */
+    public const FC_LIKE_TXT = 13;
+
+    // sparql-query https://www.iana.org/assignments/media-types/application/sparql-query
+    // geo+json
 }
 
 class Common
 {
-
     /**
      * @see https://www.iana.org/assignments/media-types/media-types.xhtml
      * @see https://www.iana.org/assignments/cont-disp/cont-disp.xhtml
@@ -42,29 +65,43 @@ class Common
     public const EXTMETA = [
         '.csv' => [
             'text/csv; charset=utf-8',
-            CConst::CC_ATTACHMENT
+            CConst::CC_ATTACHMENT,
+            CConst::FC_LIKE_CSV
         ],
         '.json' => [
             'application/json; charset=utf-8',
-            CConst::CC_INLINE
+            CConst::CC_INLINE,
+            CConst::FC_LIKE_JSON,
         ],
         // .jsonld: https://www.w3.org/TR/json-ld/#iana-considerations
         '.jsonld' => [
             'application/ld+json; charset=utf-8',
-            CConst::CC_INLINE
+            CConst::CC_INLINE,
+            CConst::FC_LIKE_JSON,
         ],
         '.tsv' => [
             'text/tab-separated-values; charset=utf-8',
-            CConst::CC_ATTACHMENT
+            CConst::CC_ATTACHMENT,
+            CConst::FC_LIKE_CSV
         ],
         '.txt' => ['text/plain; charset=utf-8',
-            CConst::CC_INLINE
+            CConst::CC_INLINE,
+            CConst::FC_LIKE_TXT
         ],
         '.hxl.csv' => ['text/csv; charset=utf-8',
-            CConst::CC_ATTACHMENT
+            CConst::CC_ATTACHMENT,
+            CConst::FC_LIKE_CSV
         ],
         '.hxl.tsv' => ['text/tab-separated-values; charset=utf-8',
-            CConst::CC_ATTACHMENT
+            CConst::CC_ATTACHMENT,
+            CConst::FC_LIKE_CSV
+        ],
+        // text/x-shellscript
+        // @see https://wiki.debian.org/ShellScript
+        // @see https://cloudinit.readthedocs.io/en/latest/topics/format.html
+        '.bash.txt' => ['text/x-shellscript; charset=utf-8',
+            CConst::CC_INLINE,
+            CConst::FC_LIKE_TXT
         ]
     ];
 
@@ -249,11 +286,21 @@ class Response
 
     public function execute_output_2xx(
         string $base,
-        array $data,
+        array $data = null,
+        // ?array $data_tabular = null,
+        // ?string $data_tabular_delimiter = "\t",
+        // array $meta = [],
         int $http_status_code = 200
     ) {
         http_response_code($http_status_code);
         header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
+
+        // if (!empty($data_tabular)) {
+        //     $data_tabular_delimiter = "\t";
+        //     $this->_output_tabular($data, $data_tabular_delimiter);
+        //     die;
+        // }
+
         // header('Content-Type: application/json; charset=utf-8');
         header("Content-type: application/json; charset=utf-8");
         // header("Access-Control-Allow-Origin: *");
@@ -502,6 +549,9 @@ class URNParserResolver extends URNParser
 {
     public ?string $file_extension;
     public ?string $media_type;
+    public ?int $content_disposition;
+    public ?int $container_like = null;
+    public ?string $tabular_delimiter;
 
     public function __construct(string $urn)
     {
@@ -517,8 +567,33 @@ class URNParserResolver extends URNParser
             if (!empty($this->q_component_parts['u2709'])) {
                 $this->file_extension = $this->q_component_parts['u2709'];
                 $this->media_type = Common::EXTMETA[$this->file_extension][0];
+                $this->content_disposition = Common::EXTMETA[$this->file_extension][1];
+                $this->container_like = Common::EXTMETA[$this->file_extension][2];
             }
         }
+        // var_dump($this->container_like === CConst::FC_LIKE_CSV);
+        // var_dump($this->container_like);
+        // var_dump($this->file_extension, Common::EXTMETA[$this->file_extension]);
+        if ($this->container_like === CConst::FC_LIKE_CSV) {
+            $this->tabular_delimiter = Common::EXT_TABULAR_DELIMITER[$this->file_extension];
+        }
+    }
+
+    /**
+     * @see https://www.php.net/manual/en/function.levenshtein.php
+     */
+    public function get_levenshtein(string $urn)
+    {
+        // This does not cover all cases; needs testing with public know URNs
+        $active_urn_base = 'urn:' . $this->path;
+
+        if ($urn === $this->raw_urn) {
+            return 0;
+        }
+
+        return levenshtein($urn, $active_urn_base);
+
+        // return [$urn, $this];
     }
 }
 
@@ -534,12 +609,13 @@ class ResponseURNResolver
     public Router $router;
     public $data;
     public array $data_tabular;
-    public string $format = 'json'; // json(ld), txt, tsv
+    // public string $format = 'json'; // json(ld), txt, tsv
     public $errors;
 
     private ?string $content_type = null;
     private ?string $file_extension = null;
-    private bool $file_is_tabular = false;
+    private ?string $tabular_delimiter = null;
+    public bool $is_tabular = false;
 
     // @TODO create shortcuts such as
     //       https://json-ld.org/playground/#json-ld=https://urn.etica.ai/urn:resolver:index
@@ -628,7 +704,7 @@ class ResponseURNResolver
         // var_dump($parsed_urn);
 
         // $parsed_urn = new URNParserResolver($this->urn);
-        // var_dump($parsed_urn);
+        // var_dump($this->urn->get_difference('urn:resolver:ping'));
         // die;
 
         if (empty($this->urn->raw_urn)) {
@@ -640,16 +716,19 @@ class ResponseURNResolver
             return false;
         }
 
+        if ($this->urn->get_levenshtein('urn:resolver:ping') === 0) {
+            return $this->operation_ping();
+        }
         if ($this->urn->raw_urn === 'urn:resolver:ping') {
             return $this->operation_ping();
         }
 
         if ($this->urn->raw_urn === 'urn:resolver:ping?=u2709=.txt') {
-            return $this->operation_ping('txt');
+            return $this->operation_ping('.txt');
         }
 
         if ($this->urn->raw_urn === 'urn:resolver:ping?=u2709=.tsv') {
-            return $this->operation_ping('tsv');
+            return $this->operation_ping('.tsv');
         }
 
         // if (in_array($this->urn, [
@@ -691,7 +770,8 @@ class ResponseURNResolver
         return [
             'content_type' => $this->content_type ?? null,
             'file_extension' => $this->file_extension ?? null,
-            'file_is_tabular' => $this->file_is_tabular
+            'is_tabular' => $this->is_tabular,
+            'tabular_delimiter' => $this->tabular_delimiter
         ];
     }
 
@@ -745,19 +825,35 @@ class ResponseURNResolver
 
     public function operation_ping(string $envelope = null)
     {
-        if ($envelope === 'txt') {
+        $envelope = $this->urn->file_extension;
+        // var_dump($this->container_like);
+        // die($this->container_like);
+
+        // @TODO generalize
+        if ($envelope === '.txt') {
             header("Content-type: text/plain; charset=utf-8");
             echo "PONG\n";
             echo date("c") . "\n";
             die;
         }
 
-        if ($envelope === 'tsv') {
+        if ($envelope === '.tsv') {
             header("Content-type: text/tab-separated-values; charset=utf-8");
             echo "#item+request+id\t#item+response+body\t#date\n";
             echo "urn:resolver:ping\tPONG\t" . date("c") . "\n";
             // echo  . "\n";
             die;
+        }
+
+        if ($this->urn->container_like === CConst::FC_LIKE_CSV) {
+            $this->is_tabular = true;
+            $this->tabular_delimiter = $this->urn->tabular_delimiter;
+            $this->data_tabular = [];
+            $this->data_tabular = [
+                ['#item+request+id', '#date', '#item+response+body'],
+                ['urn:resolver:ping', date("c"), 'PONG'],
+            ];
+            return true;
         }
 
         $this->data = [
@@ -956,6 +1052,8 @@ class Router
             $urnr = new ResponseURNResolver($this, $parsed_urn);
             if ($urnr->execute()) {
                 $data = $urnr->data;
+                // if ($urnr->is_tabular) {
+                // }
                 $resp = new Response($this->config);
                 $resp->execute_output_2xx($this->active_uri, $data);
             } else {
