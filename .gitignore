@@ -1,1 +1,4 @@
 urnresolver.conf.json
+
+scripts/temp/*
+!scripts/temp/.gitkeep

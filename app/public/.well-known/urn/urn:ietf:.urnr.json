@@ -10,7 +10,7 @@
         "out.[0].iri": "https://www.rfc-editor.org/info/rfc2141"
       },
       {
-        "in.urn": "urn:ietf:bpc:47",
+        "in.urn": "urn:ietf:bcp:47",
         "out.[0].iri": "https://www.rfc-editor.org/info/bcp47"
       }
     ]

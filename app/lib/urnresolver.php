@@ -1005,9 +1005,9 @@ class ResponseURNResolver
         if ($this->is_tabular) {
             $this->data_tabular = [];
             array_push($this->data_tabular, [
-                '#item+id+urn',
-                '#item+resolver+request+iri',
-                '#item+resolver+response+iri',
+                '#item+id',
+                '#item+request+iri',
+                '#item+response+iri',
             ]);
         } else {
             $this->data = [];
@@ -1037,8 +1037,8 @@ class ResponseURNResolver
                         // @TODO
                         array_push($this->data, [
                             '@id' => $in_urn,
-                            'urn:hxl:#item+resolver+request+iri' => URNRESOLVER_BASE . '/' . $in_urn,
-                            'urn:hxl:#item+resolver+response+iri' => $out_iri,
+                            'urn:hxl:+request+iri' => URNRESOLVER_BASE . '/' . $in_urn,
+                            'urn:hxl:+response+iri' => $out_iri,
                         ]);
                     }
                 }
@@ -1054,9 +1054,9 @@ class ResponseURNResolver
             // $resolver_paths[$key] = $path;
         }
 
-        // $this->data = [
-        //     'resolvers' => $resolver_paths,
-        // ];
+        if (!$this->is_tabular) {
+            $this->data = ['urn:resolver:_allexamples' => $this->data];
+        }
         return true;
         // return $this->is_success();
     }

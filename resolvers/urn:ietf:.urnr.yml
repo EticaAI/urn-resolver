@@ -14,7 +14,7 @@ meta:
   examples:
     - in.urn: urn:ietf:rfc:2141
       out.[0].iri: https://www.rfc-editor.org/info/rfc2141
-    - in.urn: urn:ietf:bpc:47
+    - in.urn: urn:ietf:bcp:47
       out.[0].iri: https://www.rfc-editor.org/info/bcp47
     # - in.urn: urn:ietf:rfc:2141
     #   out.[0].iri: https://www.rfc-editor.org/rfc/rfc2141.html
