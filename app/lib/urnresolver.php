@@ -837,6 +837,10 @@ class ResponseURNResolver
     {
         $this->router = $router;
         $this->urn = $urn;
+
+        if ($this->urn->container_like === CConst::FC_LIKE_CSV) {
+            $this->is_tabular = true;
+        }
     }
 
     private function _get_urnr_values(array $filters = null)
@@ -948,6 +952,10 @@ class ResponseURNResolver
             // if (strpos($this->urn->raw_urn, 'urn:resolver:_summary') === 0) {
             return $this->operation_summary();
         }
+        if ($this->urn->get_levenshtein('urn:resolver:_allexamples') === 0) {
+            // if (strpos($this->urn->raw_urn, 'urn:resolver:_summary') === 0) {
+            return $this->operation_all_examples();
+        }
 
         $this->http_status = 501;
         $errors = [
@@ -981,6 +989,74 @@ class ResponseURNResolver
             'openapi' => "https://editor.swagger.io/?url=https://raw.githubusercontent.com/EticaAI/urn-resolver/main/openapi.yml",
         ];
 
+        return true;
+        // return $this->is_success();
+    }
+
+    public function operation_all_examples()
+    {
+        $resolver_paths = [];
+        // echo "Oi";
+        // var_dump($this->urnr_paths);
+        // var_dump($this->router->urnr_paths);
+        // var_dump($this->router);
+        // var_dump($this->is_tabular);
+
+        if ($this->is_tabular) {
+            $this->data_tabular = [];
+            array_push($this->data_tabular, [
+                '#item+id+urn',
+                '#item+resolver+request+iri',
+                '#item+resolver+response+iri',
+            ]);
+        } else {
+            $this->data = [];
+        }
+
+
+        foreach ($this->router->urnr_paths as $_key => $path) {
+            $json_data = json_decode(file_get_contents($path), true);
+
+
+            if ($json_data && !empty($json_data['meta']) && !empty($json_data['meta']['examples'])) {
+                foreach ($json_data['meta']['examples'] as $key => $value) {
+                    $in_urn = $value['in.urn'];
+                    $out_iri = $value['out.[0].iri'] ?? $value['out.[0].iri'];
+
+                    if (empty($out_iri)) {
+                        continue;
+                    }
+
+                    if ($this->is_tabular) {
+                        array_push($this->data_tabular, [
+                            $in_urn,
+                            URNRESOLVER_BASE . '/' . $in_urn,
+                            $out_iri,
+                        ]);
+                    } else {
+                        // @TODO
+                        array_push($this->data, [
+                            '@id' => $in_urn,
+                            'urn:hxl:#item+resolver+request+iri' => URNRESOLVER_BASE . '/' . $in_urn,
+                            'urn:hxl:#item+resolver+response+iri' => $out_iri,
+                        ]);
+                    }
+                }
+            }
+
+            // var_dump($json_data);
+            // die;
+
+            // if ($json_data && !empty($json_data['meta']) && !empty($json_data['meta']['examples'])) {
+            //     $resolver_paths[$key] = $json_data['meta']['examples'];
+            // }
+
+            // $resolver_paths[$key] = $path;
+        }
+
+        // $this->data = [
+        //     'resolvers' => $resolver_paths,
+        // ];
         return true;
         // return $this->is_success();
     }
@@ -1038,7 +1114,7 @@ class ResponseURNResolver
         }
 
         if ($this->urn->container_like === CConst::FC_LIKE_CSV) {
-            $this->is_tabular = true;
+            // $this->is_tabular = true;
             $this->tabular_delimiter = $this->urn->tabular_delimiter;
             $this->data_tabular = [];
             $this->data_tabular = [
@@ -1060,7 +1136,17 @@ class Router
 {
     public Config $config;
     public ?URNParserResolver $urnparsed = null;
+
+    /**
+     * Prefix URN of all /.well-known/urn/*.urnr.json
+     */
     public array $resolvers = array();
+
+    /**
+     * Full path of all /.well-known/urn/*.urnr.json
+     */
+    public array $urnr_paths = array();
+
     private $active_base;
     private $active_uri;
     private $active_urn = false;
@@ -1093,6 +1179,7 @@ class Router
     {
         $urns_pattern_list = [];
         foreach (glob(RESOLVER_RULE_PATH . "/*.urnr.json") as $filepath) {
+            array_push($this->urnr_paths, $filepath);
             $filename = str_replace(RESOLVER_RULE_PATH, '', $filepath);
             $filename = ltrim($filename, '/');
             // $urn_prefix = str_replace('.urnr.yml', '', $filename) . ':';

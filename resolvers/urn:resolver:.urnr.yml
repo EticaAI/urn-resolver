@@ -20,6 +20,7 @@ meta:
     # - in.urn: urn:resolver:help
     - in.urn: urn:resolver:_explore
     - in.urn: urn:resolver:_summary
+    - in.urn: urn:resolver:_allexamples
 
     # - in.urn: urn:resolver:ping
     #   # out.[0].iri: "{{ urnresolver }}/_/resolver/ping.php"
