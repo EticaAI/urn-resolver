@@ -1,0 +1,18 @@
+$schema: urn:resolver:schema:urnr
+"@id": urn:api:un:reliefweb
+meta:
+  _comment: >
+    Informal URN. At the moment just an alias to ReliefWeb API
+  spec: https://reliefweb.int/help/api
+  examples:
+    - in.urn: "urn:api:un:reliefweb:"
+      out.[0].iri: https://api.reliefweb.int/v1/
+rules:
+  - in:
+      urn: "urn:api:un:reliefweb:v1/(.*)"
+    out:
+      - iri: "https://api.reliefweb.int/v1/{{ in[1] }}"
+  - in:
+      urn: "urn:api:un:reliefweb:(.*)"
+    out:
+      - iri: "https://api.reliefweb.int/v1/{{ in[1] }}"

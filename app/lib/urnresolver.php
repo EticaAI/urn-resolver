@@ -1251,7 +1251,8 @@ class Router
                     continue;
                 }
 
-                $urn_pattern_2 = '/' . $potential_rule->in->urn . '/';
+                // @TODO change this default modifier, as it may appear on rules
+                $urn_pattern_2 = '|' . $potential_rule->in->urn . '|';
                 $matches = null;
                 if (preg_match($urn_pattern_2, $this->active_uri, $matches)) {
                     $rule = $potential_rule;
