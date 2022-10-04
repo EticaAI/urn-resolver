@@ -1021,7 +1021,7 @@ class ResponseURNResolver
             if ($json_data && !empty($json_data['meta']) && !empty($json_data['meta']['examples'])) {
                 foreach ($json_data['meta']['examples'] as $key => $value) {
                     $in_urn = $value['in.urn'];
-                    $out_iri = $value['out.[0].iri'] ?? $value['out.[0].iri'];
+                    $out_iri = isset($value['out.[0].iri']) ? $value['out.[0].iri'] : null;
 
                     if (empty($out_iri)) {
                         continue;

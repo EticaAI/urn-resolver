@@ -44,7 +44,7 @@ curl --silent "$URNRESOLVER_ENTRYPOINT/urn:resolver:_allexamples?=u2709=.tsv" >"
   while IFS=$'\t' read -r -a line; do
 
     response=$(curl -I --write-out '%{http_code}' --silent --output /dev/null "${line[1]}")
-    
+
     if [ "$response" != "302" ]; then
       printf "${red}%s\t%s${normal}\n" "$response" "${line[1]}"
     else

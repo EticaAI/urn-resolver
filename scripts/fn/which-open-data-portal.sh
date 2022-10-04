@@ -65,3 +65,4 @@ fi
 #### APIS for several data portals _____________________________________________
 # Temporary notes
 # @see https://dev.socrata.com/docs/formats/geojson.html
+# https://en.wikipedia.org/wiki/Open_Data_Protocol

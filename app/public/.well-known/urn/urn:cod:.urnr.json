@@ -1,0 +1,73 @@
+{
+  "$schema": "urn:resolver:schema:urnr",
+  "@id": "urn:cod",
+  "meta": {
+    "_comment": "URN:COD: is a informal and generic non-branded URN for namespace for the idea of common operational datasets. For Common Operational Datasets, either OCHA URN namespace or UGA-ITOS likely to be a a better reference.\n",
+    "examples": [
+      {
+        "in.urn": "urn:cod:jsonschema:ab",
+        "out.[0].iri": "https://yaohea.etica.ai/etc/cod-ab.schema.json"
+      },
+      {
+        "in.urn": "urn:cod:jsonld:context:ab:0",
+        "out.[0].iri": "https://yaohea.etica.ai/etc/cod-ab-0.context.jsonld"
+      },
+      {
+        "in.urn": "urn:cod:jsonld:context:ab:3",
+        "out.[0].iri": "https://yaohea.etica.ai/etc/cod-ab-3.context.jsonld"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "in": {
+        "urn": "urn:cod:jsonschema:ab"
+      },
+      "out": [
+        {
+          "iri": "https://yaohea.etica.ai/etc/cod-ab.schema.json"
+        }
+      ]
+    },
+    {
+      "in": {
+        "urn": "urn:cod:jsonld:context:ab:0"
+      },
+      "out": [
+        {
+          "iri": "https://yaohea.etica.ai/etc/cod-ab-0.context.jsonld"
+        }
+      ]
+    },
+    {
+      "in": {
+        "urn": "urn:cod:jsonld:context:ab:1"
+      },
+      "out": [
+        {
+          "iri": "https://yaohea.etica.ai/etc/cod-ab-1.context.jsonld"
+        }
+      ]
+    },
+    {
+      "in": {
+        "urn": "urn:cod:jsonld:context:ab:2"
+      },
+      "out": [
+        {
+          "iri": "https://yaohea.etica.ai/etc/cod-ab-2.context.jsonld"
+        }
+      ]
+    },
+    {
+      "in": {
+        "urn": "urn:cod:jsonld:context:ab:3"
+      },
+      "out": [
+        {
+          "iri": "https://yaohea.etica.ai/etc/cod-ab-3.context.jsonld"
+        }
+      ]
+    }
+  ]
+}

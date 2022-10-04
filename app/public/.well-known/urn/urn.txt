@@ -1,5 +1,6 @@
 # .well-known/urn/urn.txt
 
+urn:cod:.urnr.json
 urn:data:un:ocha:.urnr.json
 urn:data:us:edu.uga.itos:.urnr.json
 urn:doi:.urnr.json
