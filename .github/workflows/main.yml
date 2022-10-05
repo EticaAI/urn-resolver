@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: Unlicense OR 0BSD
+
+
+name: "main"
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# env:
+#   # Fix: 'tput: No value for $TERM and no -T specified'
+#   TERM: xterm
+#   AUTOMATON__1603_16__CPLP_UNICAE: "1"
+#   # AUTOMATON__1603_16__CPLP_UNICAE: "0"
+#   # When running too many git clones at once, the scripts will
+#   # default to ARTIFICIAL_THROTTLING=1 (1 second). Next part force higher time.
+#   ARTIFICIAL_THROTTLING: 0
+#   # AUTOMATON__1603_16__CPLP_UNICAE="0", define range of UN M49 to operate
+#   # UNM49_INITIALI: 700
+#   # UNM49_FINALI: 999
+#   # UNM49_INITIALI: 400
+#   # UNM49_FINALI: 700
+#   # UNM49_INITIALI: 100
+#   # UNM49_FINALI: 400
+
+# defaults:
+#   run:
+#     working-directory: ./officina
+
+jobs:
+  "main":
+    name: main
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+
+      #### Fetch data __________________________________________________________
+      - uses: actions/checkout@v3
+
+      # #### Python ______________________________________________________________
+      # # @see https://github.com/actions/setup-python
+      # - uses: actions/setup-python@v4
+      #   with:
+      #     python-version: "3.9"
+      #     cache: "pip"
+
+      # # - run: pip install libhxl hxltm-eticaai openpyxl frictionless csvkit
+      # - run: pip install -r .github/requirements.txt
+      # # - run: python -m pip install -r .github/requirements.txt
+      # #   continue-on-error: true
+
+      # # # No idea why later the module is not found
+      # # - run: pip install python-liquid python-liquid-extra
+      # #   continue-on-error: true
+
+      # - run: pip list
+      #   continue-on-error: true
+
+      # #### Debug _______________________________________________________________
+      # _[por-Latn] Lista arquivos locais (útil para saber o que fazer upload [por-Latn]_
+      - run: ls -lha
+      # tree-like command for macos, @see https://superuser.com/questions/359723/mac-os-x-equivalent-of-the-ubuntu-tree-command
+      - run: find * -type f
+

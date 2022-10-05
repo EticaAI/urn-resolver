@@ -1,7 +1,7 @@
 # URN Resolver open source server and `/.well-known/urn/` conventions
 **This repository contains open source software to host your own a multi-propose [URN](https://en.wikipedia.org/wiki/Uniform_Resource_Name) Resolver and a working-draft open specification for `/.well-known/urn/`. Feedback in something so _overly specific_ is still welcomed!**
 
-![URN Resolver banner](img/urn-banner.png)
+![URN Resolver banner](app/public/_/img/urn-banner.png)
 
 <!-- The idea of some resolver is not new ([EticaAI/HXL-Data-Science-file-formats#13](https://github.com/EticaAI/HXL-Data-Science-file-formats/issues/13)). -->
 

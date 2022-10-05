@@ -16,9 +16,10 @@
 #       COMPANY:  EticaAI
 #       LICENSE:  Public Domain dedication
 #                 SPDX-License-Identifier: Unlicense
-#       VERSION:  v1.0
+#       VERSION:  v1.1
 #       CREATED:  2022-10-03 01:20 UTC started.
-#      REVISION:  ---
+#      REVISION:  2022-10-05 21:54 UTC moved features to
+#                                      urnresolver-rebuld-tests.sh
 #===============================================================================
 set -e
 
@@ -34,7 +35,7 @@ red=$(tput setaf 1)
 normal=$(tput sgr0)
 
 # set -x
-curl --silent "$URNRESOLVER_ENTRYPOINT/urn:resolver:exemplum?=u2709=.tsv" >"$TEMPDIR/urn:resolver:_allexamples.tsv"
+# curl --silent "$URNRESOLVER_ENTRYPOINT/urn:resolver:exemplum?=u2709=.tsv" >"$TEMPDIR/urn:resolver:_allexamples.tsv"
 
 # set +x
 
@@ -54,6 +55,6 @@ curl --silent "$URNRESOLVER_ENTRYPOINT/urn:resolver:exemplum?=u2709=.tsv" >"$TEM
     # Avoid goint too fast
     sleep 2
   done
-} <"$TEMPDIR/urn:resolver:_allexamples.tsv"
+} <"$TEMPDIR/urn_resolver_exemplum.tsv"
 
 set +x
