@@ -24,12 +24,6 @@ The current implementation of opting for server-based comes from w3id (<https://
 - [The URN Resolver conventions/specifications](#the-urn-resolver-conventionsspecifications)
     - [/.well-known/urn/ convention](#well-knownurn-convention)
     - [urn.example.org: subdomain convention](#urnexampleorg-subdomain-convention)
-- [Test cases](#test-cases)
-    - [URN:DOI](#urndoi)
-    - [URN:GEO](#urngeo)
-    - [URN:IETF](#urnietf)
-    - [URN:ISSN](#urnissn)
-    - [URN:LEX:BR](#urnlexbr)
 - [License](#license)
 
 <!-- /TOC -->
@@ -250,7 +244,7 @@ Check [resolvers](resolvers/) folder.
 
 -->
 
-
+<!--
 ## Test cases
 
 ### URN:DOI
@@ -269,7 +263,7 @@ Check [resolvers](resolvers/) folder.
 ### URN:LEX:BR
 - https://urn.etica.ai/urn:lex:br:federal:lei:2008-06-19;11705
 - https://urn.etica.ai/urn:resolver:about:urn:lex:br:federal:lei:2008-06-19;11705
-
+-->
 
 <!--
 ## @TODO

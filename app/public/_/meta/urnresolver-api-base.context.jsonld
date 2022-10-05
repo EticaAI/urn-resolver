@@ -39,7 +39,7 @@
       "@id": "hydra:Status",
       "@nest": "error"
     },
-    "$schema": null,
+    "$schema": "@none",
     "vurnr": "urn:resolver:vocab:",
     "@vocab": "vurnr:_temp#"
   }

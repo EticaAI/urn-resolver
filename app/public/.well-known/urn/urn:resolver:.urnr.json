@@ -8,16 +8,16 @@
     },
     "examples": [
       {
-        "in.urn": "urn:resolver:ping?=u2709=.txt"
-      },
-      {
         "in.urn": "urn:resolver:index"
       },
       {
-        "in.urn": "urn:resolver:_summary"
+        "in.urn": "urn:resolver:_allexamples"
       },
       {
-        "in.urn": "urn:resolver:_allexamples"
+        "in.urn": "urn:resolver:ping?=u2709=.txt"
+      },
+      {
+        "in.urn": "urn:resolver:_summary"
       }
     ],
     "spec": [

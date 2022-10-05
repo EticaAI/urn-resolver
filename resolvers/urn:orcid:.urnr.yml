@@ -1,0 +1,12 @@
+$schema: urn:resolver:schema:urnr
+"@id": urn:orcid
+meta:
+  spec: https://orcid.org/
+  examples:
+    - in.urn: urn:orcid:0000-0002-9022-8054
+      out.[0].iri: https://orcid.org/0000-0002-9022-8054
+rules:
+  - in:
+      urn: "urn:orcid:(.*)"
+    out:
+      iri: "https://orcid.org/{{ in[1] }}"

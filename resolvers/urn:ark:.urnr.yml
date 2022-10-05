@@ -1,0 +1,12 @@
+$schema: urn:resolver:schema:urnr
+"@id": urn:ark
+meta:
+  spec: https://arks.org/
+  examples:
+    - in.urn: urn:ark:12148/btv1b8449691v/f29
+      out.[0].iri: https://n2t.net/ark:/12148/btv1b8449691v/f29
+rules:
+  - in:
+      urn: "urn:ark:(.*)"
+    out:
+      iri: "https://n2t.net/ark:/{{ in[1] }}"

@@ -6,6 +6,9 @@
 
 # https://stats.uptimerobot.com/jYDZlFY8jq
 
+# @TODO get more potential informal URN namespaces from
+#       https://project-thor.readme.io/docs/project-glossary
+
 $schema: urn:resolver:schema:urnr
 "@id": urn:resolver
 meta:
