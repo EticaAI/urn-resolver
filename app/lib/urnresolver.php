@@ -24,21 +24,21 @@ define("URNRESOLVER_BASE", $global_conf->base_iri);
 class CConst
 {
     /**
-     * Content-Disposition: inline
+     * content-disposition: inline
      *
      * @see https://www.iana.org/assignments/cont-disp/cont-disp.xhtml
      */
     public const CC_INLINE = 1;
 
     /**
-     * Content-Disposition: attachment; filename=''
+     * content-disposition: attachment; filename=''
      *
      * @see @see https://www.iana.org/assignments/cont-disp/cont-disp.xhtml
      * @see https://www.rfc-editor.org/rfc/rfc2183
      */
     public const CC_ATTACHMENT = 2;
 
-    // @TODO maybe also "Content-Disposition: recipient-list" (?)
+    // @TODO maybe also "content-disposition: recipient-list" (?)
     // https://www.rfc-editor.org/rfc/rfc5363
     // public const CC_RECIPENTLIST = -1;
 
@@ -386,12 +386,15 @@ class OutputFormatter
 
     public function get_http_content_disposition()
     {
+
+        // var_dump($this->type, Common::EXTMETA[$this->type]);die;
         $extmeta = Common::EXTMETA[$this->type];
-        if ($extmeta === CConst::CC_INLINE) {
+        if ($extmeta[1] === CConst::CC_INLINE) {
             return 'inline';
         }
+        // $fileextension = $this->type;
 
-        if ($extmeta === CConst::CC_ATTACHMENT) {
+        if ($extmeta[1] === CConst::CC_ATTACHMENT) {
             $filename = $this->id . $this->type;
             // Not ideal, but on failed scenarios avoid generate bad filenames
             $filename = str_replace('http://', '', $filename);
@@ -399,10 +402,12 @@ class OutputFormatter
             $filename = str_replace('/', '__', $filename);
             $filename = str_replace('"', '', $filename);
             $filename = str_replace("'", '', $filename);
-            return "attachment; filename='$filename'";
+            return "attachment; filename=\"{$filename}\"";
         }
 
-        throw new \Exception("Syntax error");
+        return false;
+
+        // throw new \Exception("Syntax error");
     }
 
     public function get_http_mediatype()
@@ -504,8 +509,14 @@ class Response
         int $http_status_code = 200
     ) {
         http_response_code($http_status_code);
-        header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
-        header("Content-type: {$this->outf->get_http_mediatype()}");
+        header("cache-control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
+        header("content-type: {$this->outf->get_http_mediatype()}");
+
+        $content_disposition = $this->outf->get_http_content_disposition();
+        if (!empty($content_disposition)) {
+            header("content-disposition: {$content_disposition}");
+        }
+
         // header("Access-Control-Allow-Origin: *");
 
         $output = new Output($this->outf, $data);
@@ -560,11 +571,15 @@ class Response
         $this->_set_options($this->global_conf['Cache-Control']['default404']);
 
         http_response_code($http_status_code);
-        header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
-        // header('Content-Type: application/json; charset=utf-8');
-        // header("Content-type: application/json; charset=utf-8");
-        header("Content-type: {$this->outf->get_http_mediatype()}");
-        // header("Access-Control-Allow-Origin: *");
+        header("cache-control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
+        // header('content-type: application/json; charset=utf-8');
+        // header("content-type: application/json; charset=utf-8");
+        header("content-type: {$this->outf->get_http_mediatype()}");
+
+        $content_disposition = $this->outf->get_http_content_disposition();
+        if (!empty($content_disposition)) {
+            header("content-disposition: {$content_disposition}");
+        }
 
         // @TODO remove this part. Output already pre-parse errors
         $error = [
@@ -593,8 +608,13 @@ class Response
         $this->_set_options($this->global_conf['Cache-Control'][$mode]);
 
         http_response_code($http_status_code);
-        header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
-        header("Content-type: {$this->outf->get_http_mediatype()}");
+        header("cache-control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
+        header("content-type: {$this->outf->get_http_mediatype()}");
+
+        $content_disposition = $this->outf->get_http_content_disposition();
+        if (!empty($content_disposition)) {
+            header("content-disposition: {$content_disposition}");
+        }
 
         // @TODO remove this part. Output already pre-parse errors
         $error = [
@@ -620,7 +640,7 @@ class Response
     ) {
         http_response_code($http_status_code);
         // @see https://developers.cloudflare.com/cache/about/cache-control/
-        header("Cache-Control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
+        header("cache-control: {$this->_cc_prefix}, max-age={$this->max_age}, s-maxage={$this->s_maxage}, stale-while-revalidate={$this->stale_while_revalidate}, stale-if-error={$this->stale_if_error}");
         // header('Vary: Accept-Encoding');
         // header("Access-Control-Allow-Origin: *");
         // header('Location: ' . $this->active_urn_to_uri);
@@ -934,7 +954,7 @@ class ResponseURNResolver
 
         // if ($this->urn->raw_urn === 'urn:resolver:index') {
         if ($this->urn->get_levenshtein('urn:resolver:index') === 0) {
-            return $this->operation_index();
+            return $this->operationi_index();
         }
 
         if ($this->urn->get_levenshtein('urn:resolver:help') === 0) {
@@ -952,9 +972,9 @@ class ResponseURNResolver
             // if (strpos($this->urn->raw_urn, 'urn:resolver:_summary') === 0) {
             return $this->operation_summary();
         }
-        if ($this->urn->get_levenshtein('urn:resolver:_allexamples') === 0) {
+        if ($this->urn->get_levenshtein('urn:resolver:exemplum') === 0) {
             // if (strpos($this->urn->raw_urn, 'urn:resolver:_summary') === 0) {
-            return $this->operation_all_examples();
+            return $this->operation_exemplum();
         }
 
         $this->http_status = 501;
@@ -993,7 +1013,11 @@ class ResponseURNResolver
         // return $this->is_success();
     }
 
-    public function operation_all_examples()
+    /**
+     * - exemplum: s, n, nominativus, https://en.wiktionary.org/wiki/exemplum#Latin
+     * - operātiōnī: s, f, dativus, https://en.wiktionary.org/wiki/index#Latin
+     */
+    public function operation_exemplum()
     {
         $resolver_paths = [];
         // echo "Oi";
@@ -1055,7 +1079,7 @@ class ResponseURNResolver
         }
 
         if (!$this->is_tabular) {
-            $this->data = ['urn:resolver:_allexamples' => $this->data];
+            $this->data = ['urn:resolver:exemplum' => $this->data];
         }
         return true;
         // return $this->is_success();
@@ -1074,7 +1098,11 @@ class ResponseURNResolver
         // return $this->is_success();
     }
 
-    public function operation_index()
+    /**
+     * - index: s, m/f, nominativus, https://en.wiktionary.org/wiki/index#Latin
+     * - operātiōnī: s, f, dativus, https://en.wiktionary.org/wiki/index#Latin
+     */
+    public function operationi_index()
     {
         $resolver_paths = [];
         foreach ($this->router->resolvers as $key => $value) {
@@ -1099,14 +1127,14 @@ class ResponseURNResolver
 
         // @TODO generalize
         if ($envelope === '.txt') {
-            header("Content-type: text/plain; charset=utf-8");
+            header("content-type: text/plain; charset=utf-8");
             echo "PONG\n";
             echo date("c") . "\n";
             die;
         }
 
         if ($envelope === '.tsv') {
-            header("Content-type: text/tab-separated-values; charset=utf-8");
+            header("content-type: text/tab-separated-values; charset=utf-8");
             echo "#item+request+id\t#item+response+body\t#date\n";
             echo "urn:resolver:ping\tPONG\t" . date("c") . "\n";
             // echo  . "\n";
@@ -1380,8 +1408,8 @@ class Router
             die;
         }
 
-        header('Cache-Control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
-        header("Content-type: application/json; charset=utf-8");
+        header('cache-control: public, max-age=600, s-maxage=60, stale-while-revalidate=600, stale-if-error=600');
+        header("content-type: application/json; charset=utf-8");
 
         $resolver_paths = [];
         foreach ($this->resolvers as $key => $value) {

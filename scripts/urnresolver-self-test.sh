@@ -34,7 +34,7 @@ red=$(tput setaf 1)
 normal=$(tput sgr0)
 
 # set -x
-curl --silent "$URNRESOLVER_ENTRYPOINT/urn:resolver:_allexamples?=u2709=.tsv" >"$TEMPDIR/urn:resolver:_allexamples.tsv"
+curl --silent "$URNRESOLVER_ENTRYPOINT/urn:resolver:exemplum?=u2709=.tsv" >"$TEMPDIR/urn:resolver:_allexamples.tsv"
 
 # set +x
 

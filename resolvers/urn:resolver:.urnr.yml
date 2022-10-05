@@ -8,6 +8,8 @@
 
 # @TODO get more potential informal URN namespaces from
 #       https://project-thor.readme.io/docs/project-glossary
+# @TODO maybe list OSM-related software on this list
+#       https://wambachers-osm.website/SoftwareWatchlist.html
 
 $schema: urn:resolver:schema:urnr
 "@id": urn:resolver
@@ -17,8 +19,11 @@ meta:
     _cc_mode: internal
 
   examples:
+    # index, s, m/s, nominativus, https://en.wiktionary.org/wiki/index#Latin
     - in.urn: urn:resolver:index
-    - in.urn: urn:resolver:_allexamples
+    # exemplum, s, n, nominativus, https://en.wiktionary.org/wiki/exemplum#Latin
+
+    - in.urn: urn:resolver:exemplum?=u2709=.tsv
     # - in.urn: urn:resolver:ping?u2709=.txt
     - in.urn: urn:resolver:ping?=u2709=.txt
     # - in.urn: urn:resolver:help
