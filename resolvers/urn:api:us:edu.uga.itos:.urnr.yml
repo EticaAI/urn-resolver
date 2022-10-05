@@ -1,22 +1,22 @@
 $schema: urn:resolver:schema:urnr
-"@id": urn:data:us:edu.uga.itos
+"@id": urn:api:us:edu.uga.itos
 meta:
   _comment: >
     Informal URN.
   # spec: null
   examples:
-    - in.urn: "urn:data:us:edu.uga.itos:codv2api:"
+    - in.urn: "urn:api:us:edu.uga.itos:cod:"
       out.[0].iri: https://apps.itos.uga.edu/CODV2API/api/v1/Themes
 rules:
   - in:
-      urn: urn:data:us:edu.uga.itos
+      urn: urn:api:us:edu.uga.itos
     out:
       - iri: "https://epd.georgia.gov/locations/university-georgia-information-technology-outreach-services-itos"
   - in:
-      urn: urn:data:us:edu.uga.itos:codv2api
+      urn: urn:api:us:edu.uga.itos:cod
     out:
       - iri: https://apps.itos.uga.edu/CODV2API
   - in:
-      urn: "urn:data:us:edu.uga.itos:codv2api:"
+      urn: "urn:api:us:edu.uga.itos:cod:"
     out:
       - iri: "https://apps.itos.uga.edu/CODV2API/api/v1/Themes"
