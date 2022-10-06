@@ -23,6 +23,7 @@ meta:
     - in.urn: urn:resolver:index
     # exemplum, s, n, nominativus, https://en.wiktionary.org/wiki/exemplum#Latin
 
+    - in.urn: urn:resolver:exemplum
     - in.urn: urn:resolver:exemplum?=u2709=.tsv
     # - in.urn: urn:resolver:ping?u2709=.txt
     - in.urn: urn:resolver:ping?=u2709=.txt

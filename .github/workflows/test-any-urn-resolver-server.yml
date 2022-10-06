@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Unlicense OR 0BSD
+
+name: "test-any-urn-resolver-server"
+
+on:
+  workflow_dispatch:
+
+env:
+  TERM: xterm
+  URNRESOLVER: https://urn.etica.ai
+
+jobs:
+  "test-any-urn-resolver-server":
+    name: test-any-urn-resolver-server
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      #### Fetch data __________________________________________________________
+      - uses: actions/checkout@v3
+
+      - run: URNRESOLVER=https://urn.etica.ai ./scripts/urnresolver-self-test.sh
+        continue-on-error: true

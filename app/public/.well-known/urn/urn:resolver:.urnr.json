@@ -11,6 +11,9 @@
         "in.urn": "urn:resolver:index"
       },
       {
+        "in.urn": "urn:resolver:exemplum"
+      },
+      {
         "in.urn": "urn:resolver:exemplum?=u2709=.tsv"
       },
       {
