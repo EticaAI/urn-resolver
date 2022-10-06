@@ -66,3 +66,6 @@ jobs:
       # tree-like command for macos, @see https://superuser.com/questions/359723/mac-os-x-equivalent-of-the-ubuntu-tree-command
       - run: find * -type f
 
+      - run: URNRESOLVER=https://urn.etica.ai ./scripts/urnresolver-self-test.sh
+        continue-on-error: true
+

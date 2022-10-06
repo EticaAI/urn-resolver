@@ -29,13 +29,14 @@ __TEMPDIR="$ROOTDIR/scripts/temp"
 TEMPDIR="${TEMPDIR:-$__TEMPDIR}"
 __URNRESOLVER_ENTRYPOINT="http://localhost:8000/"
 URNRESOLVER_ENTRYPOINT="${URNRESOLVER_ENTRYPOINT:-$__URNRESOLVER_ENTRYPOINT}"
+TESTS_DIR="$ROOTDIR/tests"
 
-blue=$(tput setaf 4)
-red=$(tput setaf 1)
-normal=$(tput sgr0)
+# blue=$(tput setaf 4)
+# red=$(tput setaf 1)
+# normal=$(tput sgr0)
 
 set -x
-curl --silent "$URNRESOLVER_ENTRYPOINT/urn:resolver:exemplum?=u2709=.tsv" >"$TEMPDIR/urn_resolver_exemplum.tsv"
+curl --silent "$URNRESOLVER_ENTRYPOINT/urn:resolver:exemplum?=u2709=.tsv" >"$TESTS_DIR/urn_resolver_exemplum.tsv"
 
 set +x
 

@@ -1030,7 +1030,7 @@ class ResponseURNResolver
             $this->data_tabular = [];
             array_push($this->data_tabular, [
                 '#item+id',
-                '#item+request+iri',
+                // '#item+request+iri',
                 '#item+response+iri',
             ]);
         } else {
@@ -1054,14 +1054,14 @@ class ResponseURNResolver
                     if ($this->is_tabular) {
                         array_push($this->data_tabular, [
                             $in_urn,
-                            URNRESOLVER_BASE . '/' . $in_urn,
+                            // URNRESOLVER_BASE . '/' . $in_urn,
                             $out_iri,
                         ]);
                     } else {
                         // @TODO
                         array_push($this->data, [
                             '@id' => $in_urn,
-                            'urn:hxl:+request+iri' => URNRESOLVER_BASE . '/' . $in_urn,
+                            // 'urn:hxl:+request+iri' => URNRESOLVER_BASE . '/' . $in_urn,
                             'urn:hxl:+response+iri' => $out_iri,
                         ]);
                     }
