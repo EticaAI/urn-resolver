@@ -7,16 +7,22 @@ on:
 
 env:
   TERM: xterm
-  URNRESOLVER: https://urn.etica.ai
+  ENV_URNRESOLVER: "https://urn.etica.ai"
 
 jobs:
-  "test-any-urn-resolver-server":
-    name: test-any-urn-resolver-server
+  "main":
+    name: "test-any-urn-resolver-server"
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
+
       #### Fetch data __________________________________________________________
       - uses: actions/checkout@v3
 
+      #### Tests________________________________________________________________
       - run: URNRESOLVER=https://urn.etica.ai ./scripts/urnresolver-self-test.sh
         continue-on-error: true
+
+      - run: URNRESOLVER="$ENV_URNRESOLVER" ./scripts/urnresolver-self-test.sh
+        continue-on-error: true
+

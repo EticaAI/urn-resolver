@@ -9,6 +9,16 @@ While it is possible to host content on cheap, static hosting (such as GitHub pa
 The current implementation of opting for server-based comes from w3id (<https://github.com/perma-id/w3id.org>), which focuses on PURLs (not URNs), but PHP is used to allow more flexibility on configuration files over direct .htaccess rules.
 
 ----
+[![Uptime now](https://img.shields.io/uptimerobot/status/m792758722-0917578da6410908006d7724)](https://stats.uptimerobot.com/jYDZlFY8jq)
+[![7d](https://img.shields.io/uptimerobot/ratio/7/m792758722-0917578da6410908006d7724)](https://stats.uptimerobot.com/jYDZlFY8jq)
+[![30d](https://img.shields.io/uptimerobot/ratio/m792758722-0917578da6410908006d7724)](https://stats.uptimerobot.com/jYDZlFY8jq)
+[![https://urn.etica.ai (GH actions live testing)](https://github.com/EticaAI/urn-resolver/actions/workflows/test-urn-etica.ai.yml/badge.svg)](https://github.com/EticaAI/urn-resolver/actions/workflows/test-urn-etica.ai.yml)
+
+<!--
+UptimeRobot key: m792758722-0917578da6410908006d7724
+-->
+
+----
 
 **Table of contents**
 

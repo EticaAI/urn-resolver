@@ -11,10 +11,11 @@ on:
 
 env:
   TERM: xterm
+  ENV_URNRESOLVER: "https://urn.etica.ai"
 
 jobs:
   "main":
-    name: "https://urn.etica.ai (default)"
+    name: "https://urn.etica.ai (GH actions live testing)"
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -22,6 +23,10 @@ jobs:
       #### Fetch data __________________________________________________________
       - uses: actions/checkout@v3
 
+      #### Tests________________________________________________________________
       - run: URNRESOLVER=https://urn.etica.ai ./scripts/urnresolver-self-test.sh
+        continue-on-error: true
+
+      - run: URNRESOLVER="$ENV_URNRESOLVER" ./scripts/urnresolver-self-test.sh
         continue-on-error: true
 

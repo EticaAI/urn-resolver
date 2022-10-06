@@ -14,6 +14,9 @@ $global_conf = new Config();
 define("URNRESOLVER_BASE", $global_conf->base_iri);
 
 
+// @TODO maybe implement some endpoint to detail a bit more some URNs with
+//       shields.io; see https://shields.io/endpoint
+
 /**
  * Constant groups
  *
